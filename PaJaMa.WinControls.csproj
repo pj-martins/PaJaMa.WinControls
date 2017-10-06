@@ -1,0 +1,404 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BD3684C1-DD08-441F-9448-CA39006E113A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PaJaMa.WinControls</RootNamespace>
+    <AssemblyName>PaJaMa.WinControls</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug2\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug2\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug2\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Design" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppContainer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AppContainer.Designer.cs">
+      <DependentUpon>AppContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CheckBoxComboBox\CheckBoxComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CheckBoxComboBox\CheckBoxComboBox.Designer.cs">
+      <DependentUpon>CheckBoxComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CheckBoxComboBox\GripBounds.cs" />
+    <Compile Include="CheckBoxComboBox\NativeMethods.cs" />
+    <Compile Include="CheckBoxComboBox\Popup.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CheckBoxComboBox\Popup.designer.cs">
+      <DependentUpon>Popup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CheckBoxComboBox\PopupComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CheckBoxComboBox\PopupComboBox.Designer.cs">
+      <DependentUpon>PopupComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Explorer\Explorer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Explorer\Explorer.Designer.cs">
+      <DependentUpon>Explorer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileBrowser\FileBrowser.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FileBrowser\FileBrowser.Designer.cs">
+      <DependentUpon>FileBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileBrowser\FileBrowserControls.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FileBrowser\FileBrowserResources.Designer.cs" />
+    <Compile Include="FileBrowser\FileBrowserWrappers\FileBrowserContextMenuWrappers.cs" />
+    <Compile Include="FileBrowser\FileBrowserWrappers\FileBrowserDragWrappers.cs" />
+    <Compile Include="FileBrowser\FileBrowserWrappers\FileBrowserDropWrappers.cs" />
+    <Compile Include="FileBrowser\FileBrowserWrappers\FileBrowserPluginWrapper.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FileBrowser\Shell\Interfaces\IAdviseSink.cs" />
+    <Compile Include="FileBrowser\Shell\Interfaces\IContextMenu.cs" />
+    <Compile Include="FileBrowser\Shell\Interfaces\IDataObject.cs" />
+    <Compile Include="FileBrowser\Shell\Interfaces\IDragSourceHelper.cs" />
+    <Compile Include="FileBrowser\Shell\Interfaces\IDropSource.cs" />
+    <Compile Include="FileBrowser\Shell\Interfaces\IDropTarget.cs" />
+    <Compile Include="FileBrowser\Shell\Interfaces\IDropTargetHelper.cs" />
+    <Compile Include="FileBrowser\Shell\Interfaces\IEnumFORMATETC.cs" />
+    <Compile Include="FileBrowser\Shell\Interfaces\IEnumIDList.cs" />
+    <Compile Include="FileBrowser\Shell\Interfaces\IEnumSTATSTG.cs" />
+    <Compile Include="FileBrowser\Shell\Interfaces\IQueryInfo.cs" />
+    <Compile Include="FileBrowser\Shell\Interfaces\IShellExtInit.cs" />
+    <Compile Include="FileBrowser\Shell\Interfaces\IShellFolder.cs" />
+    <Compile Include="FileBrowser\Shell\Interfaces\IStorage.cs" />
+    <Compile Include="FileBrowser\Shell\Interfaces\IStream.cs" />
+    <Compile Include="FileBrowser\Shell\PIDL.cs" />
+    <Compile Include="FileBrowser\Shell\ShellAPI.cs" />
+    <Compile Include="FileBrowser\Shell\ShellBrowser.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FileBrowser\Shell\ShellBrowserUpdater.cs" />
+    <Compile Include="FileBrowser\Shell\ShellHelper.cs" />
+    <Compile Include="FileBrowser\Shell\ShellImageList.cs" />
+    <Compile Include="FileBrowser\Shell\ShellItem.cs" />
+    <Compile Include="FileBrowser\Shell\StreamStorage.cs" />
+    <Compile Include="ImageListView\BonusRenderers.cs" />
+    <Compile Include="ImageListView\ColumnHeaderCollectionEditor.cs" />
+    <Compile Include="ImageListView\ColumnHeaderCollectionTypeConverter.cs" />
+    <Compile Include="ImageListView\DebugRenderer.cs" />
+    <Compile Include="ImageListView\Enums.cs" />
+    <Compile Include="ImageListView\Events.cs" />
+    <Compile Include="ImageListView\HitInfo.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ImageListView\ImageListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ImageListView\ImageListViewCacheManager.cs" />
+    <Compile Include="ImageListView\ImageListViewColumnHeader.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ImageListView\ImageListViewColumnHeaderCollection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ImageListView\ImageListViewDesigner.cs" />
+    <Compile Include="ImageListView\ImageListViewItem.cs" />
+    <Compile Include="ImageListView\ImageListViewItemCacheManager.cs" />
+    <Compile Include="ImageListView\ImageListViewItemCollection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ImageListView\ImageListViewLayoutManager.cs" />
+    <Compile Include="ImageListView\ImageListViewNavigationManager.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ImageListView\ImageListViewRenderer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ImageListView\ImageListViewRenderers.cs" />
+    <Compile Include="ImageListView\ImageListViewResources.Designer.cs" />
+    <Compile Include="ImageListView\ImageListViewResources.tr.Designer.cs" />
+    <Compile Include="ImageListView\ImageListViewSelectedItemCollection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ImageListView\ImageListViewSerializer.cs" />
+    <Compile Include="ImageListView\Utility.cs" />
+    <Compile Include="NumericInputBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Wizard\Header.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Wizard\HeaderDesigner.cs" />
+    <Compile Include="Wizard\InfoContainer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Wizard\InfoContainerDesigner.cs" />
+    <Compile Include="Wizard\InfoPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Wizard\InfoPageDesigner.cs" />
+    <Compile Include="Wizard\PageCollection.cs" />
+    <Compile Include="Wizard\PageEventHandler.cs" />
+    <Compile Include="Wizard\Wizard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Wizard\WizardDesigner.cs" />
+    <Compile Include="Wizard\WizardPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Wizard\WizardPageDesigner.cs" />
+    <Compile Include="YesNoMessageDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="YesNoMessageDialog.Designer.cs">
+      <DependentUpon>YesNoMessageDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WinDualProgressBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WinDualProgressBox.Designer.cs">
+      <DependentUpon>WinDualProgressBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InputBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WinProgressBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WinProgressBox.Designer.cs">
+      <DependentUpon>WinProgressBox.cs</DependentUpon>
+    </Compile>
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AppContainer.resx">
+      <DependentUpon>AppContainer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CheckBoxComboBox\PopupComboBox.resx">
+      <DependentUpon>PopupComboBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Explorer\Explorer.resx">
+      <DependentUpon>Explorer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileBrowser\FileBrowser.resx">
+      <DependentUpon>FileBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileBrowser\FileBrowserResources.resx" />
+    <EmbeddedResource Include="ImageListView\ImageListViewResources.resx" />
+    <EmbeddedResource Include="ImageListView\ImageListViewResources.tr.resx" />
+    <EmbeddedResource Include="NumericInputBox.resx">
+      <DependentUpon>NumericInputBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\Header.resx">
+      <DependentUpon>Header.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\InfoContainer.resx">
+      <DependentUpon>InfoContainer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\InfoPage.resx">
+      <DependentUpon>InfoPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\Wizard.resx">
+      <DependentUpon>Wizard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\WizardPage.resx">
+      <DependentUpon>WizardPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="YesNoMessageDialog.resx">
+      <DependentUpon>YesNoMessageDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WinDualProgressBox.resx">
+      <DependentUpon>WinDualProgressBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputBox.resx">
+      <DependentUpon>InputBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WinProgressBox.resx">
+      <DependentUpon>WinProgressBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\Release\PaJamaWinControls.dll" />
+    <Content Include="FileBrowser\Images\BrowseFolders.png" />
+    <Content Include="FileBrowser\Images\BrowserBack.png" />
+    <Content Include="FileBrowser\Images\BrowserForward.png" />
+    <Content Include="FileBrowser\Images\BrowserUp.png" />
+    <Content Include="ImageListView\ImageListView.bmp" />
+    <Content Include="ImageListView\Resources\exclamation.png" />
+    <Content Include="ImageListView\Resources\image.png" />
+    <Content Include="ImageListView\Resources\SortAscending.png" />
+    <Content Include="ImageListView\Resources\SortDescending.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\PaJaMa.Common.csproj">
+      <Project>{4c71ada7-e306-467a-b014-9bd42287dcb1}</Project>
+      <Name>PaJaMa.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
