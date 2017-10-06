@@ -37,11 +37,6 @@ namespace PaJaMa.WinControls
 		private IContainer components;
 		private NumericUpDown numValue;
 
-		/// <summary>
-		/// Delegate used to validate the object
-		/// </summary>
-		private InputBoxValidatingHandler _validator;
-
 		private NumericInputBox()
 		{
 			//
