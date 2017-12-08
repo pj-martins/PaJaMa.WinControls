@@ -17,7 +17,7 @@ namespace PaJaMa.WinControls.FileBrowser
     /// <summary>
     /// This is the TreeView used in the FileBrowser control
     /// </summary>
-    internal class FileBrowserTreeView : TreeView
+    internal class FileBrowserTreeView : System.Windows.Forms.TreeView
     {
         private FileBrowserTreeSorter sorter;
 
