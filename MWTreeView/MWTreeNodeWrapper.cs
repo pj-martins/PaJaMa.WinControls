@@ -126,6 +126,8 @@ namespace PaJaMa.WinControls.MWTreeView
 		private void SelectionConstructorMethod(TreeNode tn, bool bUseExtendedSelectionColors, Color cSelectedTreeNodeBackColor, Color cSelectedTreeNodeForeColor)
 		{
 			tnNode = tn;
+			if (tnNode.TreeView == null) return;
+
 			iImageIndex = tnNode.ImageIndex;
 			iSelectedImageIndex = tnNode.SelectedImageIndex;
 
