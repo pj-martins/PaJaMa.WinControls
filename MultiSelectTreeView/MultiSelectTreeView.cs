@@ -89,6 +89,7 @@ namespace PaJaMa.WinControls.MultiSelectTreeView
 			if (e.KeyCode == Keys.A && e.Modifiers == Keys.Control)
 			{
 				SelectedNodes = getFlattenedNodes(Nodes);
+				e.Handled = true;
 				this.Invalidate();
 			}
 		}
