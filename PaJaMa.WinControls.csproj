@@ -257,20 +257,10 @@
     </Compile>
     <Compile Include="ImageListView\ImageListViewSerializer.cs" />
     <Compile Include="ImageListView\Utility.cs" />
-    <Compile Include="MWTreeView\EditorHatchStyle.cs" />
-    <Compile Include="MWTreeView\EditorHatchStyleUI.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="MWTreeView\MWRubberbandGradientBlend.cs" />
-    <Compile Include="MWTreeView\MWRubberbandGradientColorBlend.cs" />
-    <Compile Include="MWTreeView\MWStringMethods.cs" />
-    <Compile Include="MWTreeView\MWTreeNodeWrapper.cs" />
-    <Compile Include="MWTreeView\MWTreeViewEnums.cs" />
-    <Compile Include="MWTreeView\MWTreeViewEventArgs.cs" />
     <Compile Include="NumericInputBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MWTreeView\MWTreeView.cs">
+    <Compile Include="MultiSelectTreeView\MultiSelectTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Wizard\Header.cs">
@@ -337,9 +327,6 @@
     <EmbeddedResource Include="FileBrowser\FileBrowserResources.resx" />
     <EmbeddedResource Include="ImageListView\ImageListViewResources.resx" />
     <EmbeddedResource Include="ImageListView\ImageListViewResources.tr.resx" />
-    <EmbeddedResource Include="MWTreeView\EditorHatchStyleUI.resx">
-      <DependentUpon>EditorHatchStyleUI.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="NumericInputBox.resx">
       <DependentUpon>NumericInputBox.cs</DependentUpon>
       <SubType>Designer</SubType>
