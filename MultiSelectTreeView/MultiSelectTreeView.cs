@@ -31,16 +31,22 @@ namespace PaJaMa.WinControls.MultiSelectTreeView
 			return flattened;
 		}
 
+		private TreeNode _previousNode = null;
 		protected override void OnBeforeSelect(TreeViewCancelEventArgs e)
 		{
 			base.OnBeforeSelect(e);
+			_previousNode = SelectedNode;
+		}
 
+		protected override void OnAfterSelect(TreeViewEventArgs e)
+		{
+			BeginUpdate();
 			if (ModifierKeys.HasFlag(Keys.Shift))
 			{
-				if (SelectedNode != null && e.Node != null)
+				if (_previousNode != null && e.Node != null)
 				{
 					var flattened = this.getFlattenedNodes(this.Nodes);
-					var index1 = flattened.FindIndex(n => n.Text == SelectedNode.Text);
+					var index1 = flattened.FindIndex(n => n.Text == _previousNode.Text);
 					var index2 = flattened.FindIndex(n => n.Text == e.Node.Text);
 					var start = Math.Min(index1, index2);
 					var end = Math.Max(index1, index2);
@@ -52,17 +58,15 @@ namespace PaJaMa.WinControls.MultiSelectTreeView
 					}
 				}
 			}
-			else if (!ModifierKeys.HasFlag(Keys.Control))
+			else
 			{
-				this.SelectedNodes.Clear();
+				if (!ModifierKeys.HasFlag(Keys.Control))
+				{
+					this.SelectedNodes.Clear();
+				}
+				if (!this.SelectedNodes.Contains(e.Node))
+					this.SelectedNodes.Add(e.Node);
 			}
-		}
-
-		protected override void OnAfterSelect(TreeViewEventArgs e)
-		{
-			BeginUpdate();
-			if (!this.SelectedNodes.Contains(e.Node))
-				this.SelectedNodes.Add(e.Node);
 			base.OnAfterSelect(e);
 			EndUpdate();
 		}
