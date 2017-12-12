@@ -90,6 +90,7 @@ namespace PaJaMa.WinControls.MultiSelectTreeView
 			{
 				SelectedNodes = getFlattenedNodes(Nodes);
 				e.Handled = true;
+				e.SuppressKeyPress = true;
 				this.Invalidate();
 			}
 		}
