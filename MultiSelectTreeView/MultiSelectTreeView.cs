@@ -14,6 +14,10 @@ namespace PaJaMa.WinControls.MultiSelectTreeView
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public List<TreeNode> SelectedNodes { get; set; }
 
+		public bool AllowDragNodes { get; set; }
+
+		public event DragEventHandler NodesDrag;
+
 		public MultiSelectTreeView()
 		{
 			this.SelectedNodes = new List<TreeNode>();
@@ -29,46 +33,6 @@ namespace PaJaMa.WinControls.MultiSelectTreeView
 				flattened.AddRange(getFlattenedNodes(node.Nodes));
 			}
 			return flattened;
-		}
-
-		private TreeNode _previousNode = null;
-		protected override void OnBeforeSelect(TreeViewCancelEventArgs e)
-		{
-			base.OnBeforeSelect(e);
-			_previousNode = SelectedNode;
-		}
-
-		protected override void OnAfterSelect(TreeViewEventArgs e)
-		{
-			BeginUpdate();
-			if (ModifierKeys.HasFlag(Keys.Shift))
-			{
-				if (_previousNode != null && e.Node != null)
-				{
-					var flattened = this.getFlattenedNodes(this.Nodes);
-					var index1 = flattened.FindIndex(n => n.Text == _previousNode.Text);
-					var index2 = flattened.FindIndex(n => n.Text == e.Node.Text);
-					var start = Math.Min(index1, index2);
-					var end = Math.Max(index1, index2);
-					for (int i = start; i <= end; i++)
-					{
-						var node = flattened[i];
-						if (!SelectedNodes.Contains(node))
-							SelectedNodes.Add(node);
-					}
-				}
-			}
-			else
-			{
-				if (!ModifierKeys.HasFlag(Keys.Control))
-				{
-					this.SelectedNodes.Clear();
-				}
-				if (!this.SelectedNodes.Contains(e.Node))
-					this.SelectedNodes.Add(e.Node);
-			}
-			base.OnAfterSelect(e);
-			EndUpdate();
 		}
 
 		protected override void OnDrawNode(DrawTreeNodeEventArgs e)
@@ -97,6 +61,92 @@ namespace PaJaMa.WinControls.MultiSelectTreeView
 				e.SuppressKeyPress = true;
 				this.Invalidate();
 			}
+		}
+
+		protected override void OnMouseDown(MouseEventArgs e)
+		{
+			base.OnMouseDown(e);
+			var node = this.GetNodeAt(new System.Drawing.Point(e.X, e.Y));
+			if (node != null)
+			{
+				BeginUpdate();
+				if (ModifierKeys.HasFlag(Keys.Shift))
+				{
+					if (SelectedNode != null)
+					{
+						var flattened = this.getFlattenedNodes(this.Nodes);
+						var index1 = flattened.FindIndex(n => n.Text == SelectedNode.Text);
+						var index2 = flattened.FindIndex(n => n.Text == node.Text);
+						var start = Math.Min(index1, index2);
+						var end = Math.Max(index1, index2);
+						for (int i = start; i <= end; i++)
+						{
+							var f = flattened[i];
+							if (!SelectedNodes.Contains(f))
+								SelectedNodes.Add(f);
+						}
+					}
+				}
+				else if (!this.SelectedNodes.Contains(node))
+				{
+					if (!ModifierKeys.HasFlag(Keys.Control))
+						this.SelectedNodes.Clear();
+					this.SelectedNodes.Add(node);
+				}
+				SelectedNode = node;
+				this.Invalidate();
+				EndUpdate();
+				if (this.AllowDragNodes && e.Button == MouseButtons.Left)
+				{
+					var args = new DragEventArgs(new DataObject(typeof(List<TreeNode>).FullName,
+						this.SelectedNodes), 0, e.X, e.Y, DragDropEffects.All, DragDropEffects.All);
+					this.NodesDrag?.Invoke(this, args);
+					this.DoDragDrop(args.Data, args.Effect);
+				}
+			}
+		}
+
+		protected override void OnMouseUp(MouseEventArgs e)
+		{
+			base.OnMouseUp(e);
+			var node = this.GetNodeAt(new System.Drawing.Point(e.X, e.Y));
+			if (node != null)
+			{
+				if (e.Button == MouseButtons.Left && !ModifierKeys.HasFlag(Keys.Control) && !ModifierKeys.HasFlag(Keys.Shift))
+				{
+					BeginUpdate();
+					this.SelectedNodes.Clear();
+					this.SelectedNodes.Add(this.SelectedNode);
+					EndUpdate();
+				}
+			}
+		}
+
+		private List<TreeNode> recursivelyGetChildren(TreeNode parent)
+		{
+			List<TreeNode> nodes = new List<TreeNode>();
+			nodes.Add(parent);
+			foreach (TreeNode child in parent.Nodes)
+			{
+				nodes.AddRange(recursivelyGetChildren(child));
+			}
+			return nodes;
+		}
+
+		public List<TreeNode> GetSelectedFlattenedNodes()
+		{
+			return GetFlattenedNodes(SelectedNodes);
+		}
+
+		public List<TreeNode> GetFlattenedNodes(List<TreeNode> parents)
+		{
+			List<TreeNode> nodes = new List<TreeNode>();
+			foreach (var n in parents)
+			{
+				nodes.AddRange(recursivelyGetChildren(n));
+			}
+			nodes = nodes.Distinct().ToList();
+			return nodes;
 		}
 	}
 }
