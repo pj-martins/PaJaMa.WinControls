@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -63,6 +64,8 @@ namespace PaJaMa.WinControls.MultiSelectTreeView
 			}
 		}
 
+		private bool _isDragging;
+		private Point _clickPoint;
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
 			base.OnMouseDown(e);
@@ -96,12 +99,29 @@ namespace PaJaMa.WinControls.MultiSelectTreeView
 				SelectedNode = node;
 				this.Invalidate();
 				EndUpdate();
-				if (this.AllowDragNodes && e.Button == MouseButtons.Left)
+				if (this.AllowDragNodes && e.Button == MouseButtons.Left && e.Clicks == 2)
+					_isDragging = false;
+			}
+		}
+
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+			if (e.Button == MouseButtons.Left)
+			{
+				Point currentPosition = e.Location;
+				double distanceX = Math.Abs(_clickPoint.X - currentPosition.X);
+				double distanceY = Math.Abs(_clickPoint.Y - currentPosition.Y);
+				if (distanceX > 10 || distanceY > 10)
 				{
-					var args = new DragEventArgs(new DataObject(typeof(List<TreeNode>).FullName,
-						this.SelectedNodes), 0, e.X, e.Y, DragDropEffects.All, DragDropEffects.All);
-					this.NodesDrag?.Invoke(this, args);
-					this.DoDragDrop(args.Data, args.Effect);
+					if (!_isDragging)
+					{
+						_isDragging = true;
+						var args = new DragEventArgs(new DataObject(typeof(List<TreeNode>).FullName,
+							this.SelectedNodes), 0, e.X, e.Y, DragDropEffects.All, DragDropEffects.All);
+						this.NodesDrag?.Invoke(this, args);
+						this.DoDragDrop(args.Data, args.Effect);
+					}
 				}
 			}
 		}
@@ -119,6 +139,8 @@ namespace PaJaMa.WinControls.MultiSelectTreeView
 					this.SelectedNodes.Add(this.SelectedNode);
 					EndUpdate();
 				}
+				if (_isDragging)
+					_isDragging = false;
 			}
 		}
 
