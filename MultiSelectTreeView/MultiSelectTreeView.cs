@@ -144,7 +144,7 @@ namespace PaJaMa.WinControls.MultiSelectTreeView
 			}
 		}
 
-		private List<TreeNode> recursivelyGetChildren(TreeNode parent)
+		private static List<TreeNode> recursivelyGetChildren(TreeNode parent)
 		{
 			List<TreeNode> nodes = new List<TreeNode>();
 			nodes.Add(parent);
@@ -160,7 +160,7 @@ namespace PaJaMa.WinControls.MultiSelectTreeView
 			return GetFlattenedNodes(SelectedNodes);
 		}
 
-		public List<TreeNode> GetFlattenedNodes(List<TreeNode> parents)
+		public static List<TreeNode> GetFlattenedNodes(IEnumerable<TreeNode> parents)
 		{
 			List<TreeNode> nodes = new List<TreeNode>();
 			foreach (var n in parents)
