@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace PaJaMa.WinControls.MultiSelectTreeView
+namespace PaJaMa.WinControls
 {
 	public class MultiSelectTreeView : System.Windows.Forms.TreeView
 	{
