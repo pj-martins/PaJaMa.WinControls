@@ -71,7 +71,7 @@ namespace PaJaMa.WinControls
 			}
 		}
 
-		private static Form _progressForm = null;
+		private Form _progressForm = null;
 		public static void ShowProgress(BackgroundWorker worker, string text = "", IWin32Window owner = null,
 			bool allowCancel = false, ProgressBarStyle progressBarStyle = ProgressBarStyle.Blocks)
 		{
@@ -85,9 +85,12 @@ namespace PaJaMa.WinControls
 			_progressForm.ControlBox = false;
 			_progressForm.Size = new Size(400, 100);
 			_progressForm.StartPosition = FormStartPosition.CenterScreen;
-			worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(StaticBackgroundWorker_RunWorkerCompleted);
+			worker.RunWorkerCompleted -= BackgroundWorker_RunWorkerCompleted;
+			worker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
 			worker.WorkerReportsProgress = true;
 			worker.WorkerSupportsCancellation = true;
+			worker.ProgressChanged -= BackgroundWorker_ProgressChanged;
+			worker.ProgressChanged += BackgroundWorker_ProgressChanged;
 			this.BackgroundWorker = worker;
 			this.AllowCancel = allowCancel;
 			this.Dock = DockStyle.Fill;
@@ -108,8 +111,10 @@ namespace PaJaMa.WinControls
 
 		}
 
-		private static void StaticBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
+			progMain.Value = (e.Cancelled ? 0 : 100);
+			btnCancel.Enabled = true;
 			if (_progressForm != null)
 			{
 				_progressForm.DialogResult = (e.Cancelled ? DialogResult.Cancel : DialogResult.OK);
@@ -117,23 +122,5 @@ namespace PaJaMa.WinControls
 				_progressForm.Dispose();
 			}
 		}
-
-		private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-		{
-			progMain.Value = (e.Cancelled ? 0 : 100);
-			btnCancel.Enabled = true;
-		}
-
-		private void WinProgressBox_Load(object sender, EventArgs e)
-		{
-			if (this.DesignMode) return;
-			if (BackgroundWorker != null && BackgroundWorker.WorkerReportsProgress)
-			{
-				BackgroundWorker.ProgressChanged += new ProgressChangedEventHandler(BackgroundWorker_ProgressChanged);
-			}
-			BackgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorker_RunWorkerCompleted);
-		}
-
-
 	}
 }

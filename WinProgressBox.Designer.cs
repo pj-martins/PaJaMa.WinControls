@@ -77,7 +77,6 @@
 			this.Controls.Add(this.progMain);
 			this.Name = "WinProgressBox";
 			this.Size = new System.Drawing.Size(266, 60);
-			this.Load += new System.EventHandler(this.WinProgressBox_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
