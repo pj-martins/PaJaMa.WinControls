@@ -16,10 +16,10 @@ namespace PaJaMa.WinControls.TabControl
 		public event TabEventHandler TabClosing;
 		public event TabEventHandler TabAdding;
 		public event TabEventHandler TabChanged;
+		public event TabEventHandler TabOrderChanged;
 
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
 		public BindingList<TabPage> TabPages { get; set; }
-		private List<Tab> _tabs;
 		private int _visibleTabStart = 0;
 
 		private TabPage _selectedTab;
@@ -53,7 +53,7 @@ namespace PaJaMa.WinControls.TabControl
 			set
 			{
 				_allowRemove = value;
-				foreach (var tab in _tabs)
+				foreach (var tab in TabPages.Select(tp => tp.Tab))
 				{
 					tab.AllowRemove = value;
 				}
@@ -63,7 +63,6 @@ namespace PaJaMa.WinControls.TabControl
 		public TabControl()
 		{
 			InitializeComponent();
-			_tabs = new List<Tab>();
 			TabPages = new BindingList<TabPage>();
 			TabPages.ListChanged += TabPages_ListChanged;
 		}
@@ -74,10 +73,10 @@ namespace PaJaMa.WinControls.TabControl
 			if (e.ListChangedType == ListChangedType.ItemAdded)
 			{
 				_selectedTab = TabPages[e.NewIndex];
-				var newTab = new Tab() { TabPage = _selectedTab, AllowRemove = this.AllowRemove };
+				var newTab = new Tab() { TabPage = _selectedTab, AllowRemove = this.AllowRemove, TabControl = this };
+				_selectedTab.Tab = newTab;
 				newTab.TabSelected += NewTab_TabSelected;
 				newTab.TabRemoving += NewTab_TabRemoving;
-				_tabs.Insert(e.NewIndex, newTab);
 				redrawTabs();
 			}
 		}
@@ -90,11 +89,12 @@ namespace PaJaMa.WinControls.TabControl
 				pnlTabs.Controls.Add(pnlAdd);
 			}
 
-			for (int i = 0; i < _tabs.Count; i++)
+			var tabs = TabPages.Select(tb => tb.Tab).ToList();
+			for (int i = 0; i < tabs.Count; i++)
 			{
-				_tabs[i].Visible = i >= _visibleTabStart;
+				tabs[i].Visible = i >= _visibleTabStart;
 			}
-			var copy = _tabs.ToList();
+			var copy = tabs.ToList();
 			copy.Reverse();
 			foreach (var tab in copy)
 			{
@@ -121,13 +121,12 @@ namespace PaJaMa.WinControls.TabControl
 				pnlPages.Controls.Clear();
 				tab.TabPage.Dispose();
 			}
-			_tabs.Remove(tab);
 			pnlTabs.Controls.Remove(tab);
 			if (index < 0) index = 0;
-			if (_tabs.Count > index)
-				SelectedTab = _tabs[index].TabPage;
+			if (TabPages.Count > index)
+				SelectedTab = TabPages[index];
 			else if (index > 0)
-				SelectedTab = _tabs[index - 1].TabPage;
+				SelectedTab = TabPages[index - 1];
 		}
 
 		private void NewTab_TabSelected(object sender, EventArgs e)
@@ -140,25 +139,24 @@ namespace PaJaMa.WinControls.TabControl
 		{
 			pnlAdd.Visible = AllowAdd;
 			pnlPages.Controls.Clear();
-			foreach (var tab in _tabs)
+			foreach (var tab in TabPages.Select(t => t.Tab))
 			{
 				tab.IsSelected = false;
 				tab.Invalidate();
 			}
-			var selectedTab = _tabs.FirstOrDefault(t => t.TabPage == _selectedTab);
-			if (selectedTab == null) return;
+			if (_selectedTab == null) return;
 
-			selectedTab.IsSelected = true;
-			selectedTab.TabPage.TabLeft = selectedTab.Left;
-			selectedTab.TabPage.TabRight = selectedTab.Left + selectedTab.Width;
-			selectedTab.TabPage.Dock = DockStyle.Fill;
-			selectedTab.Invalidate();
-			pnlPages.Controls.Add(selectedTab.TabPage);
+			_selectedTab.Tab.IsSelected = true;
+			_selectedTab.TabLeft = _selectedTab.Left;
+			_selectedTab.TabRight = _selectedTab.Left + _selectedTab.Width;
+			_selectedTab.Dock = DockStyle.Fill;
+			_selectedTab.Invalidate();
+			pnlPages.Controls.Add(_selectedTab);
 		}
 
 		private void btnAdd_Click(object sender, EventArgs e)
 		{
-			var tabPage = new TabPage("New Tab");
+			var tabPage = new TabPage() { Text = "New Tab" };
 			TabAdding?.Invoke(this, new TabEventArgs(tabPage));
 			this.TabPages.Add(tabPage);
 		}
@@ -185,6 +183,45 @@ namespace PaJaMa.WinControls.TabControl
 		private void TabControl_Load(object sender, EventArgs e)
 		{
 			this.ParentForm.ResizeEnd += delegate (object sender2, EventArgs e2) { redrawTabs(); };
+		}
+
+		private void pnlTabs_DragEnter(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(typeof(Tab).FullName))
+			{
+				e.Effect = DragDropEffects.Move;
+			}
+		}
+
+		private void pnlTabs_DragDrop(object sender, DragEventArgs e)
+		{
+			ReorderTabs((Tab)e.Data.GetData(typeof(Tab).FullName), null);
+		}
+
+		internal void ReorderTabs(Tab source, Tab destination)
+		{
+			var srcPage = TabPages.First(t => t.Tab == source);
+			int srcIndex = TabPages.IndexOf(srcPage);
+			int destIndex = destination == null ? -1 : TabPages.IndexOf(TabPages.First(t => t.Tab == destination));
+			if (srcIndex == destIndex) return;
+			TabPages.Remove(srcPage);
+			if (destination == null)
+			{
+				TabPages.Add(srcPage);
+			}
+			else
+			{
+				if (srcIndex > destIndex)
+				{
+					TabPages.Insert(destIndex, srcPage);
+				}
+				else
+				{
+					TabPages.Insert(destIndex + 1, srcPage);
+				}
+			}
+			redrawTabs();
+			TabOrderChanged?.Invoke(this, new TabEventArgs(srcPage));
 		}
 	}
 

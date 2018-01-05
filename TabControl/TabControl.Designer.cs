@@ -46,12 +46,15 @@
 			// 
 			// pnlTabs
 			// 
+			this.pnlTabs.AllowDrop = true;
 			this.pnlTabs.Controls.Add(this.pnlAdd);
 			this.pnlTabs.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlTabs.Location = new System.Drawing.Point(0, 0);
 			this.pnlTabs.Name = "pnlTabs";
 			this.pnlTabs.Size = new System.Drawing.Size(577, 23);
 			this.pnlTabs.TabIndex = 0;
+			this.pnlTabs.DragDrop += new System.Windows.Forms.DragEventHandler(this.pnlTabs_DragDrop);
+			this.pnlTabs.DragEnter += new System.Windows.Forms.DragEventHandler(this.pnlTabs_DragEnter);
 			// 
 			// pnlAdd
 			// 

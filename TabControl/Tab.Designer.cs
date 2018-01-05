@@ -44,6 +44,7 @@
 			this.btnRemove.Padding = new System.Windows.Forms.Padding(1, 0, 0, 0);
 			this.btnRemove.Size = new System.Drawing.Size(18, 21);
 			this.btnRemove.TabIndex = 0;
+			this.btnRemove.TabStop = false;
 			this.btnRemove.Text = "x";
 			this.btnRemove.UseCompatibleTextRendering = true;
 			this.btnRemove.UseVisualStyleBackColor = false;
@@ -60,9 +61,12 @@
 			this.lblTabText.TabIndex = 1;
 			this.lblTabText.Text = "label1";
 			this.lblTabText.Click += new System.EventHandler(this.ctrl_Click);
+			this.lblTabText.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Tab_MouseMove);
+			this.lblTabText.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Tab_MouseUp);
 			// 
 			// Tab
 			// 
+			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.lblTabText);
@@ -70,6 +74,10 @@
 			this.Name = "Tab";
 			this.Size = new System.Drawing.Size(55, 20);
 			this.Click += new System.EventHandler(this.ctrl_Click);
+			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Tab_DragDrop);
+			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Tab_DragEnter);
+			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Tab_MouseMove);
+			this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Tab_MouseUp);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

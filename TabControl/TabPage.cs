@@ -14,6 +14,7 @@ namespace PaJaMa.WinControls.TabControl
 	public partial class TabPage : Panel
 	{
 		public bool IsSelected { get; set; }
+		internal Tab Tab { get; set; }
 
 		internal event EventHandler TabTextChanged;
 
@@ -38,7 +39,7 @@ namespace PaJaMa.WinControls.TabControl
 
 		public TabPage()
 		{
-			SetStyle(ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.DoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
+			SetStyle(ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 		}
 
 		protected override void OnPaint(PaintEventArgs e)

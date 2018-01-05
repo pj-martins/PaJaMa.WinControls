@@ -65,7 +65,6 @@ namespace PaJaMa.WinControls
 		}
 
 		private bool _isDragging;
-		private Point _clickPoint;
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
 			base.OnMouseDown(e);
@@ -109,19 +108,13 @@ namespace PaJaMa.WinControls
 			base.OnMouseMove(e);
 			if (e.Button == MouseButtons.Left)
 			{
-				Point currentPosition = e.Location;
-				double distanceX = Math.Abs(_clickPoint.X - currentPosition.X);
-				double distanceY = Math.Abs(_clickPoint.Y - currentPosition.Y);
-				if (distanceX > 10 || distanceY > 10)
+				if (!_isDragging)
 				{
-					if (!_isDragging)
-					{
-						_isDragging = true;
-						var args = new DragEventArgs(new DataObject(typeof(List<TreeNode>).FullName,
-							this.SelectedNodes), 0, e.X, e.Y, DragDropEffects.All, DragDropEffects.All);
-						this.NodesDrag?.Invoke(this, args);
-						this.DoDragDrop(args.Data, args.Effect);
-					}
+					_isDragging = true;
+					var args = new DragEventArgs(new DataObject(typeof(List<TreeNode>).FullName,
+						this.SelectedNodes), 0, e.X, e.Y, DragDropEffects.All, DragDropEffects.All);
+					this.NodesDrag?.Invoke(this, args);
+					this.DoDragDrop(args.Data, args.Effect);
 				}
 			}
 		}

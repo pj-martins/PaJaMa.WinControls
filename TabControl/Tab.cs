@@ -27,6 +27,7 @@ namespace PaJaMa.WinControls.TabControl
 			}
 		}
 
+		public TabControl TabControl { get; set; }
 		private TabPage _tabPage;
 		public TabPage TabPage
 		{
@@ -60,7 +61,6 @@ namespace PaJaMa.WinControls.TabControl
 			var color = IsSelected ? Color.White : SystemColors.Control;
 			using (SolidBrush brush = new SolidBrush(color))
 				e.Graphics.FillRectangle(brush, ClientRectangle);
-			// e.Graphics.DrawRectangle(Pens.Yellow, 0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
 			var pen = new Pen(SystemColors.ActiveBorder);
 			e.Graphics.DrawLine(pen, 0, 0, ClientSize.Width - 1, 0);
 			e.Graphics.DrawLine(pen, 0, 0, 0, ClientSize.Height - 1);
@@ -75,6 +75,38 @@ namespace PaJaMa.WinControls.TabControl
 		private void btnRemove_Click(object sender, EventArgs e)
 		{
 			TabRemoving?.Invoke(this, e);
+		}
+
+		private bool _isDragging;
+		private void Tab_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				if (!_isDragging)
+				{
+					_isDragging = true;
+					this.DoDragDrop(this, DragDropEffects.Move);
+				}
+			}
+		}
+
+		private void Tab_MouseUp(object sender, MouseEventArgs e)
+		{
+			_isDragging = false;
+		}
+
+		private void Tab_DragEnter(object sender, DragEventArgs e)
+		{
+			var data = e.Data.GetData(this.GetType().FullName);
+			if (data != null && data != this)
+			{
+				e.Effect = DragDropEffects.Move;
+			}
+		}
+
+		private void Tab_DragDrop(object sender, DragEventArgs e)
+		{
+			this.TabControl.ReorderTabs((Tab)e.Data.GetData(typeof(Tab).FullName), this);
 		}
 	}
 }
