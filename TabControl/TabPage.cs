@@ -14,7 +14,20 @@ namespace PaJaMa.WinControls.TabControl
 	public partial class TabPage : Panel
 	{
 		public bool IsSelected { get; set; }
-		public override string Text { get; set; }
+
+		internal event EventHandler TabTextChanged;
+
+		private string _text;
+		public override string Text
+		{
+			get { return _text; }
+			set
+			{
+				_text = value;
+				TabTextChanged?.Invoke(this, new EventArgs());
+			}
+		}
+
 		public int TabLeft { get; set; }
 		public int TabRight { get; set; }
 

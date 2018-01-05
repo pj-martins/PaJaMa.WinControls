@@ -34,6 +34,7 @@ namespace PaJaMa.WinControls.TabControl
 			set
 			{
 				_tabPage = value;
+				_tabPage.TabTextChanged += delegate (object sender, EventArgs e) { redraw(); };
 				redraw();
 			}
 		}
@@ -47,9 +48,11 @@ namespace PaJaMa.WinControls.TabControl
 
 		private void redraw()
 		{
+			this.SuspendLayout();
 			btnRemove.Visible = AllowRemove;
 			this.lblTabText.Text = _tabPage.Text;
-			this.Width = this.lblTabText.Width + (AllowRemove ? btnRemove.Width : 0) + 10;
+			this.Width = this.lblTabText.Width + (AllowRemove ? btnRemove.Width : 0) + 3;
+			this.ResumeLayout();
 		}
 
 		protected override void OnPaint(PaintEventArgs e)
