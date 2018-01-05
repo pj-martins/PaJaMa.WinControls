@@ -239,7 +239,19 @@
     <Compile Include="ScrollableMessageBox.Designer.cs">
       <DependentUpon>ScrollableMessageBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="TabControl.cs">
+    <Compile Include="TabControl\Tab.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TabControl\Tab.Designer.cs">
+      <DependentUpon>Tab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TabControl\TabControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TabControl\TabControl.Designer.cs">
+      <DependentUpon>TabControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TabControl\TabPage.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Wizard\Header.cs">
@@ -312,6 +324,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ScrollableMessageBox.resx">
       <DependentUpon>ScrollableMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TabControl\Tab.resx">
+      <DependentUpon>Tab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TabControl\TabControl.resx">
+      <DependentUpon>TabControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\Header.resx">
       <DependentUpon>Header.cs</DependentUpon>
