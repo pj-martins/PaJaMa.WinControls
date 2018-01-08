@@ -130,6 +130,7 @@
 			this.pnlPages.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlPages.Location = new System.Drawing.Point(0, 23);
 			this.pnlPages.Name = "pnlPages";
+			this.pnlPages.Padding = new System.Windows.Forms.Padding(1);
 			this.pnlPages.Size = new System.Drawing.Size(617, 433);
 			this.pnlPages.TabIndex = 0;
 			// 

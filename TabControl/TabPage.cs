@@ -29,9 +29,6 @@ namespace PaJaMa.WinControls.TabControl
 			}
 		}
 
-		public int TabLeft { get; set; }
-		public int TabRight { get; set; }
-
 		public TabPage(string text) : this()
 		{
 			this.Text = text;
@@ -48,8 +45,8 @@ namespace PaJaMa.WinControls.TabControl
 				e.Graphics.FillRectangle(brush, ClientRectangle);
 
 			var pen = new Pen(SystemColors.ActiveBorder);
-			e.Graphics.DrawLine(pen, 0, 0, TabLeft, 0);
-			e.Graphics.DrawLine(pen, TabRight, 0, ClientSize.Width - 1, 0);
+			e.Graphics.DrawLine(pen, 0, 0, this.Tab.Left, 0);
+			e.Graphics.DrawLine(pen, this.Tab.Left + this.Tab.Width, 0, ClientSize.Width - 1, 0);
 			e.Graphics.DrawLine(pen, 0, 0, 0, ClientSize.Height - 1);
 			e.Graphics.DrawLine(pen, ClientSize.Width - 1, 0, ClientSize.Width - 1, ClientSize.Height - 1);
 			e.Graphics.DrawLine(pen, 0, ClientSize.Height - 1, ClientSize.Width - 1, ClientSize.Height - 1);

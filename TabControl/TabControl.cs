@@ -67,9 +67,10 @@ namespace PaJaMa.WinControls.TabControl
 			TabPages.ListChanged += TabPages_ListChanged;
 		}
 
+		private bool _lockAdd;
 		private void TabPages_ListChanged(object sender, ListChangedEventArgs e)
 		{
-			if (DesignMode) return;
+			if (DesignMode || _lockAdd) return;
 			if (e.ListChangedType == ListChangedType.ItemAdded)
 			{
 				_selectedTab = TabPages[e.NewIndex];
@@ -147,11 +148,9 @@ namespace PaJaMa.WinControls.TabControl
 			if (_selectedTab == null) return;
 
 			_selectedTab.Tab.IsSelected = true;
-			_selectedTab.TabLeft = _selectedTab.Left;
-			_selectedTab.TabRight = _selectedTab.Left + _selectedTab.Width;
 			_selectedTab.Dock = DockStyle.Fill;
-			_selectedTab.Invalidate();
 			pnlPages.Controls.Add(_selectedTab);
+			this.Invalidate();
 		}
 
 		private void btnAdd_Click(object sender, EventArgs e)
@@ -204,6 +203,7 @@ namespace PaJaMa.WinControls.TabControl
 			int srcIndex = TabPages.IndexOf(srcPage);
 			int destIndex = destination == null ? -1 : TabPages.IndexOf(TabPages.First(t => t.Tab == destination));
 			if (srcIndex == destIndex) return;
+			_lockAdd = true;
 			TabPages.Remove(srcPage);
 			if (destination == null)
 			{
@@ -215,6 +215,10 @@ namespace PaJaMa.WinControls.TabControl
 				{
 					TabPages.Insert(destIndex, srcPage);
 				}
+				else if (destIndex >= TabPages.Count - 1)
+				{
+					TabPages.Add(srcPage);
+				}
 				else
 				{
 					TabPages.Insert(destIndex + 1, srcPage);
@@ -222,6 +226,7 @@ namespace PaJaMa.WinControls.TabControl
 			}
 			redrawTabs();
 			TabOrderChanged?.Invoke(this, new TabEventArgs(srcPage));
+			_lockAdd = false;
 		}
 	}
 
