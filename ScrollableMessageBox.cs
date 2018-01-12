@@ -12,14 +12,32 @@ namespace PaJaMa.WinControls
 {
 	public partial class ScrollableMessageBox : Form
 	{
+		public new Common.DialogResult DialogResult { get; private set; }
+
 		public ScrollableMessageBox()
 		{
 			InitializeComponent();
+			btnYes.Tag = Common.DialogResult.Yes;
+			btnYesAll.Tag = Common.DialogResult.YesToAll;
+			btnOK.Tag = Common.DialogResult.OK;
+			btnCancel.Tag = Common.DialogResult.Cancel;
+			btnNo.Tag = Common.DialogResult.No;
+			btnNoAll.Tag = Common.DialogResult.NoToAll;
 		}
 
-		public static DialogResult ShowDialog(string[] lines, string caption = "")
+		public static Common.DialogResult ShowDialog(string text, string caption = "", ScrollableMessageBoxButtons buttons = ScrollableMessageBoxButtons.OK)
 		{
-			return show(lines, caption, true);
+			return show(text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries), caption, true, buttons);
+		}
+
+		public static Common.DialogResult ShowDialog(string[] lines, string caption = "", ScrollableMessageBoxButtons buttons = ScrollableMessageBoxButtons.OK)
+		{
+			return show(lines, caption, true, buttons);
+		}
+
+		public static void Show(string text, string caption = "")
+		{
+			show(text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries), caption, false);
 		}
 
 		public static void Show(string[] lines, string caption = "")
@@ -27,9 +45,15 @@ namespace PaJaMa.WinControls
 			show(lines, caption, false);
 		}
 
-		private static DialogResult show(string[] lines, string caption, bool isDialog)
+		private static Common.DialogResult show(string[] lines, string caption, bool isDialog, ScrollableMessageBoxButtons buttons = ScrollableMessageBoxButtons.OK)
 		{
 			var msg = new ScrollableMessageBox();
+			msg.btnYes.Visible = msg.btnNo.Visible =
+				buttons == ScrollableMessageBoxButtons.YesNo || buttons == ScrollableMessageBoxButtons.YesNoCancel || buttons == ScrollableMessageBoxButtons.YesAllNoAll || buttons == ScrollableMessageBoxButtons.YesAllNoAllCancel;
+			msg.btnYesAll.Visible = msg.btnNoAll.Visible =
+				buttons == ScrollableMessageBoxButtons.YesAllNoAll || buttons == ScrollableMessageBoxButtons.YesAllNoAllCancel;
+			msg.btnOK.Visible = buttons == ScrollableMessageBoxButtons.OK || buttons == ScrollableMessageBoxButtons.OKCancel;
+			msg.btnCancel.Visible = buttons == ScrollableMessageBoxButtons.OKCancel || buttons == ScrollableMessageBoxButtons.YesAllNoAllCancel || buttons == ScrollableMessageBoxButtons.YesNoCancel;
 			msg.txtLines.Lines = lines;
 			msg.Text = caption;
 			var height = lines.Length * 13;
@@ -40,14 +64,19 @@ namespace PaJaMa.WinControls
 			}
 			msg.Height = (msg.Height - msg.txtLines.Height) + height + 7;
 			if (isDialog)
-				return msg.ShowDialog();
+			{
+				msg.ShowDialog();
+				return msg.DialogResult;
+			}
 			msg.Show();
-			return DialogResult.None;
+			return Common.DialogResult.None;
 		}
 
-		private void btnOK_Click(object sender, EventArgs e)
+		private void btn_Click(object sender, EventArgs e)
 		{
-			this.DialogResult = DialogResult.OK;
+			var btn = sender as Button;
+			var result = (Common.DialogResult)btn.Tag;
+			DialogResult = result;
 			this.Close();
 		}
 
@@ -55,5 +84,15 @@ namespace PaJaMa.WinControls
 		{
 			btnOK.Select();
 		}
+	}
+
+	public enum ScrollableMessageBoxButtons
+	{
+		OK,
+		OKCancel,
+		YesNo,
+		YesNoCancel,
+		YesAllNoAllCancel,
+		YesAllNoAll,
 	}
 }

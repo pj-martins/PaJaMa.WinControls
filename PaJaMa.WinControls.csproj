@@ -276,12 +276,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Wizard\WizardPageDesigner.cs" />
-    <Compile Include="YesNoMessageDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="YesNoMessageDialog.Designer.cs">
-      <DependentUpon>YesNoMessageDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="WinDualProgressBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -345,9 +339,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Wizard\WizardPage.resx">
       <DependentUpon>WizardPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="YesNoMessageDialog.resx">
-      <DependentUpon>YesNoMessageDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WinDualProgressBox.resx">
       <DependentUpon>WinDualProgressBox.cs</DependentUpon>
