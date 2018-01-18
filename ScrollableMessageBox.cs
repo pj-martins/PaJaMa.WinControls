@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PaJaMa.Common;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,25 +13,25 @@ namespace PaJaMa.WinControls
 {
 	public partial class ScrollableMessageBox : Form
 	{
-		public new Common.DialogResult DialogResult { get; private set; }
+		public new PromptResult DialogResult { get; private set; }
 
 		public ScrollableMessageBox()
 		{
 			InitializeComponent();
-			btnYes.Tag = Common.DialogResult.Yes;
-			btnYesAll.Tag = Common.DialogResult.YesToAll;
-			btnOK.Tag = Common.DialogResult.OK;
-			btnCancel.Tag = Common.DialogResult.Cancel;
-			btnNo.Tag = Common.DialogResult.No;
-			btnNoAll.Tag = Common.DialogResult.NoToAll;
+			btnYes.Tag = PromptResult.Yes;
+			btnYesAll.Tag = PromptResult.YesToAll;
+			btnOK.Tag = PromptResult.OK;
+			btnCancel.Tag = PromptResult.Cancel;
+			btnNo.Tag = PromptResult.No;
+			btnNoAll.Tag = PromptResult.NoToAll;
 		}
 
-		public static Common.DialogResult ShowDialog(string text, string caption = "", ScrollableMessageBoxButtons buttons = ScrollableMessageBoxButtons.OK)
+		public static PromptResult ShowDialog(string text, string caption = "", ScrollableMessageBoxButtons buttons = ScrollableMessageBoxButtons.OK)
 		{
 			return show(text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries), caption, true, buttons);
 		}
 
-		public static Common.DialogResult ShowDialog(string[] lines, string caption = "", ScrollableMessageBoxButtons buttons = ScrollableMessageBoxButtons.OK)
+		public static PromptResult ShowDialog(string[] lines, string caption = "", ScrollableMessageBoxButtons buttons = ScrollableMessageBoxButtons.OK)
 		{
 			return show(lines, caption, true, buttons);
 		}
@@ -45,7 +46,7 @@ namespace PaJaMa.WinControls
 			show(lines, caption, false);
 		}
 
-		private static Common.DialogResult show(string[] lines, string caption, bool isDialog, ScrollableMessageBoxButtons buttons = ScrollableMessageBoxButtons.OK)
+		private static PromptResult show(string[] lines, string caption, bool isDialog, ScrollableMessageBoxButtons buttons = ScrollableMessageBoxButtons.OK)
 		{
 			var msg = new ScrollableMessageBox();
 			msg.btnYes.Visible = msg.btnNo.Visible =
@@ -69,13 +70,13 @@ namespace PaJaMa.WinControls
 				return msg.DialogResult;
 			}
 			msg.Show();
-			return Common.DialogResult.None;
+			return PromptResult.None;
 		}
 
 		private void btn_Click(object sender, EventArgs e)
 		{
 			var btn = sender as Button;
-			var result = (Common.DialogResult)btn.Tag;
+			var result = (PromptResult)btn.Tag;
 			DialogResult = result;
 			this.Close();
 		}
