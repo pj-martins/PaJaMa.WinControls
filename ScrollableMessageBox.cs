@@ -26,35 +26,35 @@ namespace PaJaMa.WinControls
 			btnNoAll.Tag = PromptResult.NoToAll;
 		}
 
-		public static PromptResult ShowDialog(string text, string caption = "", ScrollableMessageBoxButtons buttons = ScrollableMessageBoxButtons.OK)
+		public static PromptResult ShowDialog(string text, string caption = "", params ScrollableMessageBoxButtons[] buttons)
 		{
 			return show(text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries), caption, true, buttons);
 		}
 
-		public static PromptResult ShowDialog(string[] lines, string caption = "", ScrollableMessageBoxButtons buttons = ScrollableMessageBoxButtons.OK)
+		public static PromptResult ShowDialog(string[] lines, string caption = "", params ScrollableMessageBoxButtons[] buttons)
 		{
 			return show(lines, caption, true, buttons);
 		}
 
 		public static void Show(string text, string caption = "")
 		{
-			show(text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries), caption, false);
+			show(text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries), caption, false, ScrollableMessageBoxButtons.OK);
 		}
 
 		public static void Show(string[] lines, string caption = "")
 		{
-			show(lines, caption, false);
+			show(lines, caption, false, ScrollableMessageBoxButtons.OK);
 		}
 
-		private static PromptResult show(string[] lines, string caption, bool isDialog, ScrollableMessageBoxButtons buttons = ScrollableMessageBoxButtons.OK)
+		private static PromptResult show(string[] lines, string caption, bool isDialog, params ScrollableMessageBoxButtons[] buttons)
 		{
 			var msg = new ScrollableMessageBox();
-			msg.btnYes.Visible = msg.btnNo.Visible =
-				buttons == ScrollableMessageBoxButtons.YesNo || buttons == ScrollableMessageBoxButtons.YesNoCancel || buttons == ScrollableMessageBoxButtons.YesAllNoAll || buttons == ScrollableMessageBoxButtons.YesAllNoAllCancel;
-			msg.btnYesAll.Visible = msg.btnNoAll.Visible =
-				buttons == ScrollableMessageBoxButtons.YesAllNoAll || buttons == ScrollableMessageBoxButtons.YesAllNoAllCancel;
-			msg.btnOK.Visible = buttons == ScrollableMessageBoxButtons.OK || buttons == ScrollableMessageBoxButtons.OKCancel;
-			msg.btnCancel.Visible = buttons == ScrollableMessageBoxButtons.OKCancel || buttons == ScrollableMessageBoxButtons.YesAllNoAllCancel || buttons == ScrollableMessageBoxButtons.YesNoCancel;
+			msg.btnYes.Visible = buttons.Contains(ScrollableMessageBoxButtons.Yes);
+			msg.btnNo.Visible = buttons.Contains(ScrollableMessageBoxButtons.No);
+			msg.btnYesAll.Visible = buttons.Contains(ScrollableMessageBoxButtons.YesToAll);
+			msg.btnNoAll.Visible = buttons.Contains(ScrollableMessageBoxButtons.NoToAll);
+			msg.btnOK.Visible = buttons.Contains(ScrollableMessageBoxButtons.OK);
+			msg.btnCancel.Visible = buttons.Contains(ScrollableMessageBoxButtons.Cancel);
 			msg.txtLines.Lines = lines;
 			msg.Text = caption;
 			var height = lines.Length * 13;
@@ -90,10 +90,10 @@ namespace PaJaMa.WinControls
 	public enum ScrollableMessageBoxButtons
 	{
 		OK,
-		OKCancel,
-		YesNo,
-		YesNoCancel,
-		YesAllNoAllCancel,
-		YesAllNoAll,
+		Yes,
+		No,
+		YesToAll,
+		NoToAll,
+		Cancel
 	}
 }
