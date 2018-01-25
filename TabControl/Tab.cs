@@ -108,5 +108,11 @@ namespace PaJaMa.WinControls.TabControl
 		{
 			this.TabControl.ReorderTabs((Tab)e.Data.GetData(typeof(Tab).FullName), this);
 		}
+
+		private void toolCloseOthers_Click(object sender, EventArgs e)
+		{
+			TabSelected?.Invoke(this, e);
+			this.TabControl.CloseOtherTabs(this);
+		}
 	}
 }

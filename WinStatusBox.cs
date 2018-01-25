@@ -9,24 +9,21 @@ using System.Windows.Forms;
 
 namespace PaJaMa.WinControls
 {
-	public partial class WinProgressBox : UserControl
+	public partial class WinStatusBox : Form
 	{
+		[System.Runtime.InteropServices.DllImport("user32.dll")]
+		static extern bool HideCaret(IntPtr hWnd);
+
 		public bool AllowCancel
 		{
-			get { return btnCancel.Visible; }
-			set { btnCancel.Visible = value; }
+			get { return btnOK.Visible; }
+			set { btnOK.Visible = value; }
 		}
 
 		public BackgroundWorker BackgroundWorker
 		{
 			get;
 			set;
-		}
-
-		public string ProgressText
-		{
-			get { return lblProgress.Text; }
-			set { lblProgress.Text = value; }
 		}
 
 		public int Progress
@@ -42,50 +39,37 @@ namespace PaJaMa.WinControls
 				progMain.Value = e.ProgressPercentage;
 				if (e.UserState != null && e.UserState is String)
 				{
-					lblProgress.Visible = true;
-					lblProgress.Text = e.UserState.ToString();
+					txtLines.Text += $"{e.UserState.ToString()}\r\n";
+					this.Refresh();
+				}
+				else if (e.UserState != null && e.UserState is IEnumerable<string>)
+				{
+					txtLines.Text = string.Join("\r\n", ((IEnumerable<string>)e.UserState).ToArray());
 					this.Refresh();
 				}
 			}
 		}
 
-		public WinProgressBox()
+		public WinStatusBox()
 		{
 			InitializeComponent();
+			txtLines.GotFocus += (object sender, EventArgs e) => HideCaret(txtLines.Handle);
 		}
 
-		public event EventHandler Cancel;
-
-		private void btnCancel_Click(object sender, EventArgs e)
+		private void WinStatusBox_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			if (BackgroundWorker != null && BackgroundWorker.IsBusy)
-			{
-				btnCancel.Enabled = false;
-			}
-			if (BackgroundWorker != null && BackgroundWorker.WorkerSupportsCancellation)
-			{
-				BackgroundWorker.CancelAsync();
-			}
-			if (Cancel != null)
-			{
-				Cancel(this, e);
-			}
+			throw new NotImplementedException();
 		}
 
-		private Form _progressForm = null;
 		public static void ShowProgress(BackgroundWorker worker, string text = "", IWin32Window owner = null,
 			bool allowCancel = false, ProgressBarStyle progressBarStyle = ProgressBarStyle.Blocks)
 		{
-			new WinProgressBox().Show(worker, text, owner, allowCancel, progressBarStyle);
+			new WinStatusBox().Show(worker, text, owner, allowCancel, progressBarStyle);
 		}
 
 		public void Show(BackgroundWorker worker, string text = "", IWin32Window owner = null,
 			bool allowCancel = false, ProgressBarStyle progressBarStyle = ProgressBarStyle.Blocks)
 		{
-			_progressForm = new Form();
-			_progressForm.ControlBox = false;
-			_progressForm.Size = new Size(400, 100);
-			_progressForm.StartPosition = FormStartPosition.CenterScreen;
 			worker.RunWorkerCompleted -= BackgroundWorker_RunWorkerCompleted;
 			worker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
 			worker.WorkerReportsProgress = true;
@@ -97,31 +81,26 @@ namespace PaJaMa.WinControls
 			this.Dock = DockStyle.Fill;
 			this.progMain.Style = progressBarStyle;
 
-			_progressForm.Controls.Add(this);
-
-
 			this.BackgroundWorker.RunWorkerAsync();
 			if (owner != null)
-			{
-				_progressForm.ShowDialog(owner);
-			}
+				this.ShowDialog(owner);
 			else
-			{
-				_progressForm.ShowDialog();
-			}
+				this.ShowDialog();
 
 		}
 
 		private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
-			progMain.Value = (e.Cancelled ? 0 : 100);
-			btnCancel.Enabled = true;
-			if (_progressForm != null)
-			{
-				_progressForm.DialogResult = (e.Cancelled ? DialogResult.Cancel : DialogResult.OK);
-				_progressForm.Close();
-				_progressForm.Dispose();
-			}
+			progMain.Visible = false;
+			if (string.IsNullOrEmpty(txtLines.Text.Trim()))
+				this.Close();
+			else
+				btnOK.Visible = true;
+		}
+
+		private void btnOK_Click(object sender, EventArgs e)
+		{
+			this.Close();
 		}
 	}
 }

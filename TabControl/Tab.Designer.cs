@@ -28,8 +28,12 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.btnRemove = new System.Windows.Forms.Button();
 			this.lblTabText = new System.Windows.Forms.Label();
+			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.toolCloseOthers = new System.Windows.Forms.ToolStripMenuItem();
+			this.contextMenuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// btnRemove
@@ -55,6 +59,7 @@
 			// 
 			this.lblTabText.AutoSize = true;
 			this.lblTabText.BackColor = System.Drawing.Color.Transparent;
+			this.lblTabText.ContextMenuStrip = this.contextMenuStrip1;
 			this.lblTabText.Location = new System.Drawing.Point(3, 5);
 			this.lblTabText.Name = "lblTabText";
 			this.lblTabText.Size = new System.Drawing.Size(35, 13);
@@ -63,6 +68,20 @@
 			this.lblTabText.Click += new System.EventHandler(this.ctrl_Click);
 			this.lblTabText.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Tab_MouseMove);
 			this.lblTabText.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Tab_MouseUp);
+			// 
+			// contextMenuStrip1
+			// 
+			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolCloseOthers});
+			this.contextMenuStrip1.Name = "contextMenuStrip1";
+			this.contextMenuStrip1.Size = new System.Drawing.Size(142, 26);
+			// 
+			// toolCloseOthers
+			// 
+			this.toolCloseOthers.Name = "toolCloseOthers";
+			this.toolCloseOthers.Size = new System.Drawing.Size(141, 22);
+			this.toolCloseOthers.Text = "Close &Others";
+			this.toolCloseOthers.Click += new System.EventHandler(this.toolCloseOthers_Click);
 			// 
 			// Tab
 			// 
@@ -78,6 +97,7 @@
 			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Tab_DragEnter);
 			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Tab_MouseMove);
 			this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Tab_MouseUp);
+			this.contextMenuStrip1.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -87,5 +107,7 @@
 
 		private System.Windows.Forms.Button btnRemove;
 		private System.Windows.Forms.Label lblTabText;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+		private System.Windows.Forms.ToolStripMenuItem toolCloseOthers;
 	}
 }

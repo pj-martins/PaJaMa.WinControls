@@ -132,6 +132,7 @@ namespace PaJaMa.WinControls.TabControl
 
 		private void NewTab_TabSelected(object sender, EventArgs e)
 		{
+			if (SelectedTab == (sender as Tab).TabPage) return;
 			SelectedTab = (sender as Tab).TabPage;
 			TabChanged?.Invoke(this, new TabEventArgs(SelectedTab));
 		}
@@ -181,6 +182,7 @@ namespace PaJaMa.WinControls.TabControl
 
 		private void TabControl_Load(object sender, EventArgs e)
 		{
+			if (DesignMode) return;
 			this.ParentForm.ResizeEnd += delegate (object sender2, EventArgs e2) { redrawTabs(); };
 		}
 
@@ -227,6 +229,18 @@ namespace PaJaMa.WinControls.TabControl
 			redrawTabs();
 			TabOrderChanged?.Invoke(this, new TabEventArgs(srcPage));
 			_lockAdd = false;
+		}
+
+		internal void CloseOtherTabs(Tab tab)
+		{
+			for (int i = TabPages.Count - 1; i >= 0; i--)
+			{
+				var tabPage = TabPages[i];
+				if (tabPage == tab.TabPage) continue;
+				TabClosing?.Invoke(this, new TabEventArgs(tabPage));
+				TabPages.Remove(tabPage);
+				pnlTabs.Controls.Remove(tabPage.Tab);
+			}
 		}
 	}
 
