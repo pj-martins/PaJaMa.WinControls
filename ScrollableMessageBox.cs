@@ -53,7 +53,7 @@ namespace PaJaMa.WinControls
 			msg.btnNo.Visible = buttons.Contains(ScrollableMessageBoxButtons.No);
 			msg.btnYesAll.Visible = buttons.Contains(ScrollableMessageBoxButtons.YesToAll);
 			msg.btnNoAll.Visible = buttons.Contains(ScrollableMessageBoxButtons.NoToAll);
-			msg.btnOK.Visible = buttons.Contains(ScrollableMessageBoxButtons.OK);
+			msg.btnOK.Visible = buttons.Contains(ScrollableMessageBoxButtons.OK) || buttons.Length < 1;
 			msg.btnCancel.Visible = buttons.Contains(ScrollableMessageBoxButtons.Cancel);
 			msg.txtLines.Lines = lines;
 			msg.Text = caption;
