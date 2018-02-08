@@ -159,6 +159,8 @@ namespace PaJaMa.WinControls.TabControl
 			var tabPage = new TabPage() { Text = "New Tab" };
 			TabAdding?.Invoke(this, new TabEventArgs(tabPage));
 			this.TabPages.Add(tabPage);
+			SelectedTab = tabPage;
+			TabChanged?.Invoke(this, new TabEventArgs(tabPage));
 		}
 
 		private void btnLeft_Click(object sender, EventArgs e)
