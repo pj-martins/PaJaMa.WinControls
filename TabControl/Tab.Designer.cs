@@ -59,7 +59,7 @@
 			// 
 			this.lblTabText.AutoSize = true;
 			this.lblTabText.BackColor = System.Drawing.Color.Transparent;
-			this.lblTabText.ContextMenuStrip = this.contextMenuStrip1;
+			// this.lblTabText.ContextMenuStrip = this.contextMenuStrip1;
 			this.lblTabText.Location = new System.Drawing.Point(3, 5);
 			this.lblTabText.Name = "lblTabText";
 			this.lblTabText.Size = new System.Drawing.Size(35, 13);
