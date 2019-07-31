@@ -74,6 +74,7 @@ namespace PaJaMa.WinControls.TabControl
 
 		private void btnRemove_Click(object sender, EventArgs e)
 		{
+			if (MessageBox.Show("Are you sure you want to close this tab?", "Close tab", MessageBoxButtons.YesNo) != DialogResult.Yes) return;
 			TabRemoving?.Invoke(this, e);
 		}
 

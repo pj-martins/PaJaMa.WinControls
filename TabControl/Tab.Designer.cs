@@ -59,7 +59,6 @@
 			// 
 			this.lblTabText.AutoSize = true;
 			this.lblTabText.BackColor = System.Drawing.Color.Transparent;
-			// this.lblTabText.ContextMenuStrip = this.contextMenuStrip1;
 			this.lblTabText.Location = new System.Drawing.Point(3, 5);
 			this.lblTabText.Name = "lblTabText";
 			this.lblTabText.Size = new System.Drawing.Size(35, 13);
@@ -88,6 +87,7 @@
 			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.ContextMenuStrip = this.contextMenuStrip1;
 			this.Controls.Add(this.lblTabText);
 			this.Controls.Add(this.btnRemove);
 			this.Name = "Tab";
