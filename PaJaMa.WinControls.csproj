@@ -239,6 +239,9 @@
     <Compile Include="ScrollableMessageBox.Designer.cs">
       <DependentUpon>ScrollableMessageBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="SyntaxRichTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="TabControl\Tab.cs">
       <SubType>UserControl</SubType>
     </Compile>
