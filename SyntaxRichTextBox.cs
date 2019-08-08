@@ -13,7 +13,7 @@ namespace PaJaMa.WinControls
 	public class SyntaxRichTextBox : System.Windows.Forms.RichTextBox
 	{
 		private readonly SyntaxSettings _settings = new SyntaxSettings();
-		private bool _initial = false;
+		private bool _suspendTextChanged = false;
 		private string _line = "";
 		private int _contentLength = 0;
 		private int _lineLength = 0;
@@ -81,7 +81,7 @@ namespace PaJaMa.WinControls
 		/// <param name="e"></param>
 		protected override void OnTextChanged(EventArgs e)
 		{
-			if (_initial) return;
+			if (_suspendTextChanged) return;
 			_contentLength = this.TextLength;
 
 			int nCurrentSelectionStart = SelectionStart;
@@ -119,18 +119,18 @@ namespace PaJaMa.WinControls
 			SelectionColor = Color.Black;
 
 			// Process the keywords
-			ProcessRegex(m_strKeywords, Settings.KeywordColor);
+			ProcessRegex(_line, _lineStart, m_strKeywords, Settings.KeywordColor);
 			// Process numbers
 			if(Settings.EnableIntegers)
-				ProcessRegex("\\b(?:[0-9]*\\.)?[0-9]+\\b", Settings.IntegerColor);
+				ProcessRegex(_line, _lineStart, "\\b(?:[0-9]*\\.)?[0-9]+\\b", Settings.IntegerColor);
 			// Process strings
 			if(Settings.EnableStrings)
-				ProcessRegex("\"[^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*\"", Settings.StringColor);
+				ProcessRegex(_line, _lineStart, "\"[^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*\"", Settings.StringColor);
 			// Process comments
 			if(Settings.EnableComments && !string.IsNullOrEmpty(Settings.Comment))
-				ProcessRegex(Settings.Comment + ".*$", Settings.CommentColor);
+				ProcessRegex(_line, _lineStart, Settings.Comment + ".*$", Settings.CommentColor);
 			if (!string.IsNullOrEmpty(Settings.QuoteIdentifier))
-				ProcessRegex($"({Settings.QuoteIdentifier}.*?{Settings.QuoteIdentifier})", Settings.QuoteColor);
+				ProcessRegex(_line, _lineStart, $"({Settings.QuoteIdentifier}.*?{Settings.QuoteIdentifier})", Settings.QuoteColor);
 			//if (Settings.EnableComments && Settings.CommentBlockStartEnd != null)
 			//{
 			//	// TODO spaces
@@ -151,15 +151,15 @@ namespace PaJaMa.WinControls
 		/// </summary>
 		/// <param name="strRegex">The regular expression.</param>
 		/// <param name="color">The color.</param>
-		private void ProcessRegex(string strRegex, Color color)
+		private void ProcessRegex(string input, int start, string strRegex, Color color)
 		{
 			Regex regKeywords = new Regex(strRegex, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 			Match regMatch;
 
-			for (regMatch = regKeywords.Match(_line); regMatch.Success; regMatch = regMatch.NextMatch())
+			for (regMatch = regKeywords.Match(input); regMatch.Success; regMatch = regMatch.NextMatch())
 			{
 				// Process the words
-				int nStart = _lineStart + regMatch.Index;
+				int nStart = start + regMatch.Index;
 				int nLenght = regMatch.Length;
 				SelectionStart = nStart;
 				SelectionLength = nLenght;
@@ -182,32 +182,52 @@ namespace PaJaMa.WinControls
 			}
 		}
 
-		public void ProcessAllLines(bool initial)
+		public void ProcessAllLines(bool suspend)
 		{
-			_initial = initial;
+
+
+			//int nStartPos = 0;
+			//int i = 0;
+			//int nOriginalPos = SelectionStart;
+			//while (i < Lines.Length)
+			//{
+			//	_line = Lines[i];
+			//	_lineStart = nStartPos;
+			//	_lineEnd = _lineStart + _line.Length;
+
+			//	ProcessLine();
+			//	i++;
+
+			//	nStartPos += _line.Length+1;
+			//}
+
+			
+
+			_suspendTextChanged = suspend;
 			this.SuspendPainting();
 
-			int nStartPos = 0;
-			int i = 0;
-			int nOriginalPos = SelectionStart;
-			while (i < Lines.Length)
-			{
-				_line = Lines[i];
-				_lineStart = nStartPos;
-				_lineEnd = _lineStart + _line.Length;
 
-				ProcessLine();
-				i++;
-
-				nStartPos += _line.Length+1;
-			}
+			// Process the keywords
+			ProcessRegex(Text, 0, m_strKeywords, Settings.KeywordColor);
+			// Process numbers
+			if (Settings.EnableIntegers)
+				ProcessRegex(Text, 0, "\\b(?:[0-9]*\\.)?[0-9]+\\b", Settings.IntegerColor);
+			// Process strings
+			if (Settings.EnableStrings)
+				ProcessRegex(Text, 0, "\"[^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*\"", Settings.StringColor);
+			// Process comments
+			if (Settings.EnableComments && !string.IsNullOrEmpty(Settings.Comment))
+				ProcessRegex(Text, 0, Settings.Comment + ".*$", Settings.CommentColor);
+			if (!string.IsNullOrEmpty(Settings.QuoteIdentifier))
+				ProcessRegex(Text, 0, $"({Settings.QuoteIdentifier}.*?{Settings.QuoteIdentifier})", Settings.QuoteColor);
 
 			this.ResumePainting();
-			_initial = false;
+			_suspendTextChanged = false;
 		}
 
 		public void CommentSelected()
 		{
+			_suspendTextChanged = true;
 			this.SuspendPainting();
 			int nCurrentSelectionStart = SelectionStart;
 			int nCurrentSelectionEnd = SelectionStart + SelectionLength;
@@ -229,10 +249,12 @@ namespace PaJaMa.WinControls
 
 			SelectionStart = nCurrentSelectionStart;
 			this.ResumePainting();
+			_suspendTextChanged = false;
 		}
 
 		public void UnCommentSelected()
 		{
+			_suspendTextChanged = true;
 			this.SuspendPainting();
 			int nCurrentSelectionStart = SelectionStart;
 			int nCurrentSelectionEnd = SelectionStart + SelectionLength;
@@ -263,6 +285,16 @@ namespace PaJaMa.WinControls
 
 			SelectionStart = nCurrentSelectionStart;
 			this.ResumePainting();
+			_suspendTextChanged = false;
+		}
+
+		protected override void OnKeyUp(KeyEventArgs e)
+		{
+			base.OnKeyUp(e);
+			if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V)
+			{
+				this.ProcessAllLines(true);
+			}
 		}
 	}
 
