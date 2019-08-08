@@ -12,13 +12,13 @@ namespace PaJaMa.WinControls
 {
 	public class SyntaxRichTextBox : System.Windows.Forms.RichTextBox
 	{
-		private SyntaxSettings m_settings = new SyntaxSettings();
+		private readonly SyntaxSettings _settings = new SyntaxSettings();
 		private bool _initial = false;
-		private string m_strLine = "";
-		private int m_nContentLength = 0;
-		private int m_nLineLength = 0;
-		private int m_nLineStart = 0;
-		private int m_nLineEnd = 0;
+		private string _line = "";
+		private int _contentLength = 0;
+		private int _lineLength = 0;
+		private int _lineStart = 0;
+		private int _lineEnd = 0;
 		private string m_strKeywords = "";
 		private int m_nCurSelection = 0;
 
@@ -27,7 +27,7 @@ namespace PaJaMa.WinControls
 		/// </summary>
 		public SyntaxSettings Settings
 		{
-			get { return m_settings; }
+			get { return _settings; }
 		}
 
 		[DllImport("user32.dll")]
@@ -82,7 +82,7 @@ namespace PaJaMa.WinControls
 		protected override void OnTextChanged(EventArgs e)
 		{
 			if (_initial) return;
-			m_nContentLength = this.TextLength;
+			_contentLength = this.TextLength;
 
 			int nCurrentSelectionStart = SelectionStart;
 			int nCurrentSelectionLength = SelectionLength;
@@ -90,17 +90,17 @@ namespace PaJaMa.WinControls
 			this.SuspendPainting();
 
 			// Find the start of the current line.
-			m_nLineStart = nCurrentSelectionStart;
-			while ((m_nLineStart > 0) && (Text[m_nLineStart - 1] != '\n'))
-				m_nLineStart--;
+			_lineStart = nCurrentSelectionStart;
+			while ((_lineStart > 0) && (Text[_lineStart - 1] != '\n'))
+				_lineStart--;
 			// Find the end of the current line.
-			m_nLineEnd = nCurrentSelectionStart;
-			while ((m_nLineEnd < Text.Length) && (Text[m_nLineEnd] != '\n'))
-				m_nLineEnd++;
+			_lineEnd = nCurrentSelectionStart;
+			while ((_lineEnd < Text.Length) && (Text[_lineEnd] != '\n'))
+				_lineEnd++;
 			// Calculate the length of the line.
-			m_nLineLength = m_nLineEnd - m_nLineStart;
+			_lineLength = _lineEnd - _lineStart;
 			// Get the current line.
-			m_strLine = Text.Substring(m_nLineStart, m_nLineLength);
+			_line = Text.Substring(_lineStart, _lineLength);
 
 			// Process this line.
 			ProcessLine();
@@ -114,8 +114,8 @@ namespace PaJaMa.WinControls
 		{
 			// Save the position and make the whole line black
 			int nPosition = SelectionStart;
-			SelectionStart = m_nLineStart;
-			SelectionLength = m_nLineLength;
+			SelectionStart = _lineStart;
+			SelectionLength = _lineLength;
 			SelectionColor = Color.Black;
 
 			// Process the keywords
@@ -129,6 +129,16 @@ namespace PaJaMa.WinControls
 			// Process comments
 			if(Settings.EnableComments && !string.IsNullOrEmpty(Settings.Comment))
 				ProcessRegex(Settings.Comment + ".*$", Settings.CommentColor);
+			if (!string.IsNullOrEmpty(Settings.QuoteIdentifier))
+				ProcessRegex($"({Settings.QuoteIdentifier}.*?{Settings.QuoteIdentifier})", Settings.QuoteColor);
+			//if (Settings.EnableComments && Settings.CommentBlockStartEnd != null)
+			//{
+			//	// TODO spaces
+			//	if (_line.StartsWith(Settings.CommentBlockStartEnd.Item1))
+			//	{
+
+			//	}
+			//}
 
 			SelectionStart = nPosition;
 			SelectionLength = 0;
@@ -146,10 +156,10 @@ namespace PaJaMa.WinControls
 			Regex regKeywords = new Regex(strRegex, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 			Match regMatch;
 
-			for (regMatch = regKeywords.Match(m_strLine); regMatch.Success; regMatch = regMatch.NextMatch())
+			for (regMatch = regKeywords.Match(_line); regMatch.Success; regMatch = regMatch.NextMatch())
 			{
 				// Process the words
-				int nStart = m_nLineStart + regMatch.Index;
+				int nStart = _lineStart + regMatch.Index;
 				int nLenght = regMatch.Length;
 				SelectionStart = nStart;
 				SelectionLength = nLenght;
@@ -182,14 +192,14 @@ namespace PaJaMa.WinControls
 			int nOriginalPos = SelectionStart;
 			while (i < Lines.Length)
 			{
-				m_strLine = Lines[i];
-				m_nLineStart = nStartPos;
-				m_nLineEnd = m_nLineStart + m_strLine.Length;
+				_line = Lines[i];
+				_lineStart = nStartPos;
+				_lineEnd = _lineStart + _line.Length;
 
 				ProcessLine();
 				i++;
 
-				nStartPos += m_strLine.Length+1;
+				nStartPos += _line.Length+1;
 			}
 
 			this.ResumePainting();
@@ -203,11 +213,11 @@ namespace PaJaMa.WinControls
 			int nCurrentSelectionEnd = SelectionStart + SelectionLength;
 			
 			// Find the start of the current line.
-			m_nLineStart = nCurrentSelectionStart;
-			while ((m_nLineStart > 0) && (Text[m_nLineStart - 1] != '\n'))
-				m_nLineStart--;
+			_lineStart = nCurrentSelectionStart;
+			while ((_lineStart > 0) && (Text[_lineStart - 1] != '\n'))
+				_lineStart--;
 			SelectionLength = 0;
-			for (int i = m_nLineStart; i <= nCurrentSelectionEnd; i++)
+			for (int i = _lineStart; i <= nCurrentSelectionEnd; i++)
 			{
 				if (i == 0 || (i < Text.Length && Text[i - 1] == '\n'))
 				{
@@ -228,11 +238,11 @@ namespace PaJaMa.WinControls
 			int nCurrentSelectionEnd = SelectionStart + SelectionLength;
 
 			// Find the start of the current line.
-			m_nLineStart = nCurrentSelectionStart;
-			while ((m_nLineStart > 0) && (Text[m_nLineStart - 1] != '\n'))
-				m_nLineStart--;
+			_lineStart = nCurrentSelectionStart;
+			while ((_lineStart > 0) && (Text[_lineStart - 1] != '\n'))
+				_lineStart--;
 			SelectionLength = 0;
-			for (int i = m_nLineStart; i <= nCurrentSelectionEnd; i++)
+			for (int i = _lineStart; i <= nCurrentSelectionEnd; i++)
 			{
 				if (i == 0 || (i < Text.Length && Text[i - 1] == '\n'))
 				{
@@ -263,6 +273,7 @@ namespace PaJaMa.WinControls
 	{
 		public List<string> m_rgList = new List<string>();
 		public Color m_color = new Color();
+		public Color m_quoteColor = new Color();
 	}
 
 	/// <summary>
@@ -271,6 +282,7 @@ namespace PaJaMa.WinControls
 	public class SyntaxSettings
 	{
 		SyntaxList m_rgKeywords = new SyntaxList();
+		Tuple<string, string> _commentBlockStartEnd;
 		string m_strComment = "";
 		Color m_colorComment = Color.Green;
 		Color m_colorString = Color.Gray;
@@ -295,6 +307,15 @@ namespace PaJaMa.WinControls
 			get { return m_rgKeywords.m_color; }
 			set { m_rgKeywords.m_color = value; }
 		}
+		public string QuoteIdentifier { get; set; }
+		/// <summary>
+		/// The quote of keywords.
+		/// </summary>
+		public Color QuoteColor
+		{
+			get { return m_rgKeywords.m_quoteColor; }
+			set { m_rgKeywords.m_quoteColor = value; }
+		}
 		/// <summary>
 		/// A string containing the comment identifier.
 		/// </summary>
@@ -302,6 +323,14 @@ namespace PaJaMa.WinControls
 		{
 			get { return m_strComment; }
 			set { m_strComment = value; }
+		}
+		/// <summary>
+		/// A string containing the comment identifier.
+		/// </summary>
+		public Tuple<string, string> CommentBlockStartEnd
+		{
+			get { return _commentBlockStartEnd; }
+			set { _commentBlockStartEnd = value; }
 		}
 		/// <summary>
 		/// The color of comments.
