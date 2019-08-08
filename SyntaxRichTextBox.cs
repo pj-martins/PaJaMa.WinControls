@@ -195,6 +195,65 @@ namespace PaJaMa.WinControls
 			this.ResumePainting();
 			_initial = false;
 		}
+
+		public void CommentSelected()
+		{
+			this.SuspendPainting();
+			int nCurrentSelectionStart = SelectionStart;
+			int nCurrentSelectionEnd = SelectionStart + SelectionLength;
+			
+			// Find the start of the current line.
+			m_nLineStart = nCurrentSelectionStart;
+			while ((m_nLineStart > 0) && (Text[m_nLineStart - 1] != '\n'))
+				m_nLineStart--;
+			SelectionLength = 0;
+			for (int i = m_nLineStart; i <= nCurrentSelectionEnd; i++)
+			{
+				if (i == 0 || (i < Text.Length && Text[i - 1] == '\n'))
+				{
+					SelectionStart = i;
+					SelectedText = this.Settings.Comment + " ";
+					SelectionLength = 0;
+				}
+			}
+
+			SelectionStart = nCurrentSelectionStart;
+			this.ResumePainting();
+		}
+
+		public void UnCommentSelected()
+		{
+			this.SuspendPainting();
+			int nCurrentSelectionStart = SelectionStart;
+			int nCurrentSelectionEnd = SelectionStart + SelectionLength;
+
+			// Find the start of the current line.
+			m_nLineStart = nCurrentSelectionStart;
+			while ((m_nLineStart > 0) && (Text[m_nLineStart - 1] != '\n'))
+				m_nLineStart--;
+			SelectionLength = 0;
+			for (int i = m_nLineStart; i <= nCurrentSelectionEnd; i++)
+			{
+				if (i == 0 || (i < Text.Length && Text[i - 1] == '\n'))
+				{
+					SelectionStart = i;
+					SelectionLength = this.Settings.Comment.Length;
+					if (SelectedText == this.Settings.Comment)
+					{
+						SelectedText = string.Empty;
+					}
+					SelectionStart = i;
+					SelectionLength = 1;
+					if (SelectedText == " ")
+					{
+						SelectedText = string.Empty;
+					}
+				}
+			}
+
+			SelectionStart = nCurrentSelectionStart;
+			this.ResumePainting();
+		}
 	}
 
 	/// <summary>
