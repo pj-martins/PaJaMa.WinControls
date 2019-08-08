@@ -6,13 +6,14 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Drawing;
+using System.Runtime.InteropServices;
 
 namespace PaJaMa.WinControls
 {
 	public class SyntaxRichTextBox : System.Windows.Forms.RichTextBox
 	{
 		private SyntaxSettings m_settings = new SyntaxSettings();
-		private static bool m_bPaint = true;
+		private bool _initial = false;
 		private string m_strLine = "";
 		private int m_nContentLength = 0;
 		private int m_nLineLength = 0;
@@ -28,36 +29,65 @@ namespace PaJaMa.WinControls
 		{
 			get { return m_settings; }
 		}
-		
-		/// <summary>
-		/// WndProc
-		/// </summary>
-		/// <param name="m"></param>
-		protected override void WndProc(ref System.Windows.Forms.Message m)
+
+		[DllImport("user32.dll")]
+		static extern IntPtr SendMessage(IntPtr hWnd, Int32 wMsg, Int32 wParam, ref Point lParam);
+
+		[DllImport("user32.dll")]
+		static extern IntPtr SendMessage(IntPtr hWnd, Int32 wMsg, Int32 wParam, IntPtr lParam);
+
+		const int WM_USER = 0x400;
+		const int WM_SETREDRAW = 0x000B;
+		const int EM_GETEVENTMASK = WM_USER + 59;
+		const int EM_SETEVENTMASK = WM_USER + 69;
+		const int EM_GETSCROLLPOS = WM_USER + 221;
+		const int EM_SETSCROLLPOS = WM_USER + 222;
+
+		Point _ScrollPoint;
+		bool _Painting = true;
+		IntPtr _EventMask;
+		int _SuspendIndex = 0;
+		int _SuspendLength = 0;
+
+		public void SuspendPainting()
 		{
-			if (m.Msg == 0x00f)
+			if (_Painting)
 			{
-				if (m_bPaint)
-					base.WndProc(ref m);
-				else
-					m.Result = IntPtr.Zero;
+				_SuspendIndex = this.SelectionStart;
+				_SuspendLength = this.SelectionLength;
+				SendMessage(this.Handle, EM_GETSCROLLPOS, 0, ref _ScrollPoint);
+				SendMessage(this.Handle, WM_SETREDRAW, 0, IntPtr.Zero);
+				_EventMask = SendMessage(this.Handle, EM_GETEVENTMASK, 0, IntPtr.Zero);
+				_Painting = false;
 			}
-			else
-				base.WndProc(ref m);
 		}
+
+		public void ResumePainting()
+		{
+			if (!_Painting)
+			{
+				this.Select(_SuspendIndex, _SuspendLength);
+				SendMessage(this.Handle, EM_SETSCROLLPOS, 0, ref _ScrollPoint);
+				SendMessage(this.Handle, EM_SETEVENTMASK, 0, _EventMask);
+				SendMessage(this.Handle, WM_SETREDRAW, 1, IntPtr.Zero);
+				_Painting = true;
+				this.Invalidate();
+			}
+		}
+
 		/// <summary>
 		/// OnTextChanged
 		/// </summary>
 		/// <param name="e"></param>
 		protected override void OnTextChanged(EventArgs e)
 		{
-			// Calculate shit here.
+			if (_initial) return;
 			m_nContentLength = this.TextLength;
 
 			int nCurrentSelectionStart = SelectionStart;
 			int nCurrentSelectionLength = SelectionLength;
 
-			m_bPaint = false;
+			this.SuspendPainting();
 
 			// Find the start of the current line.
 			m_nLineStart = nCurrentSelectionStart;
@@ -75,7 +105,7 @@ namespace PaJaMa.WinControls
 			// Process this line.
 			ProcessLine();
 
-			m_bPaint = true;
+			this.ResumePainting();
 		}
 		/// <summary>
 		/// Process a line.
@@ -142,9 +172,10 @@ namespace PaJaMa.WinControls
 			}
 		}
 
-		public void ProcessAllLines()
+		public void ProcessAllLines(bool initial)
 		{
-			m_bPaint = false;
+			_initial = initial;
+			this.SuspendPainting();
 
 			int nStartPos = 0;
 			int i = 0;
@@ -161,7 +192,8 @@ namespace PaJaMa.WinControls
 				nStartPos += m_strLine.Length+1;
 			}
 
-			m_bPaint = true;
+			this.ResumePainting();
+			_initial = false;
 		}
 	}
 
