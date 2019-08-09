@@ -7,28 +7,28 @@ using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Linq;
 
 namespace PaJaMa.WinControls
 {
 	public class SyntaxRichTextBox : System.Windows.Forms.RichTextBox
 	{
-		private readonly SyntaxSettings _settings = new SyntaxSettings();
-		private bool _suspendTextChanged = false;
+		private bool _suspend = true;
 		private string _line = "";
 		private int _contentLength = 0;
 		private int _lineLength = 0;
 		private int _lineStart = 0;
 		private int _lineEnd = 0;
-		private string m_strKeywords = "";
-		private int m_nCurSelection = 0;
+		private string _keywords = "";
+		private int _currSelection = 0;
+		private List<UndoRedoItem> _undoStack = new List<UndoRedoItem>();
+		private List<UndoRedoItem> _redoStack = new List<UndoRedoItem>();
 
 		/// <summary>
 		/// The settings.
 		/// </summary>
-		public SyntaxSettings Settings
-		{
-			get { return _settings; }
-		}
+		public SyntaxSettings Settings { get; private set; }
 
 		[DllImport("user32.dll")]
 		static extern IntPtr SendMessage(IntPtr hWnd, Int32 wMsg, Int32 wParam, ref Point lParam);
@@ -48,6 +48,11 @@ namespace PaJaMa.WinControls
 		IntPtr _EventMask;
 		int _SuspendIndex = 0;
 		int _SuspendLength = 0;
+
+		public SyntaxRichTextBox() : base()
+		{
+			this.Settings = new SyntaxSettings();
+		}
 
 		public void SuspendPainting()
 		{
@@ -81,7 +86,7 @@ namespace PaJaMa.WinControls
 		/// <param name="e"></param>
 		protected override void OnTextChanged(EventArgs e)
 		{
-			if (_suspendTextChanged) return;
+			if (_suspend) return;
 			_contentLength = this.TextLength;
 
 			int nCurrentSelectionStart = SelectionStart;
@@ -118,33 +123,13 @@ namespace PaJaMa.WinControls
 			SelectionLength = _lineLength;
 			SelectionColor = Color.Black;
 
-			// Process the keywords
-			ProcessRegex(_line, _lineStart, m_strKeywords, Settings.KeywordColor);
-			// Process numbers
-			if(Settings.EnableIntegers)
-				ProcessRegex(_line, _lineStart, "\\b(?:[0-9]*\\.)?[0-9]+\\b", Settings.IntegerColor);
-			// Process strings
-			if(Settings.EnableStrings)
-				ProcessRegex(_line, _lineStart, "\"[^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*\"", Settings.StringColor);
-			// Process comments
-			if(Settings.EnableComments && !string.IsNullOrEmpty(Settings.Comment))
-				ProcessRegex(_line, _lineStart, Settings.Comment + ".*$", Settings.CommentColor);
-			if (!string.IsNullOrEmpty(Settings.QuoteIdentifier))
-				ProcessRegex(_line, _lineStart, $"({Settings.QuoteIdentifier}.*?{Settings.QuoteIdentifier})", Settings.QuoteColor);
-			//if (Settings.EnableComments && Settings.CommentBlockStartEnd != null)
-			//{
-			//	// TODO spaces
-			//	if (_line.StartsWith(Settings.CommentBlockStartEnd.Item1))
-			//	{
-
-			//	}
-			//}
+			this.processText(_line, _lineStart);
 
 			SelectionStart = nPosition;
 			SelectionLength = 0;
 			SelectionColor = Color.Black;
 
-			m_nCurSelection = nPosition;
+			_currSelection = nPosition;
 		}
 		/// <summary>
 		/// Process a regular expression.
@@ -175,63 +160,40 @@ namespace PaJaMa.WinControls
 			{
 				string strKeyword = Settings.Keywords[i];
 
-				if (i == Settings.Keywords.Count-1)
-					m_strKeywords += "\\b" + strKeyword + "\\b";
+				if (i == Settings.Keywords.Count - 1)
+					_keywords += "\\b" + strKeyword + "\\b";
 				else
-					m_strKeywords += "\\b" + strKeyword + "\\b|";
+					_keywords += "\\b" + strKeyword + "\\b|";
 			}
 		}
 
 		public void ProcessAllLines(bool suspend)
 		{
-
-
-			//int nStartPos = 0;
-			//int i = 0;
-			//int nOriginalPos = SelectionStart;
-			//while (i < Lines.Length)
-			//{
-			//	_line = Lines[i];
-			//	_lineStart = nStartPos;
-			//	_lineEnd = _lineStart + _line.Length;
-
-			//	ProcessLine();
-			//	i++;
-
-			//	nStartPos += _line.Length+1;
-			//}
-
-			
-
-			_suspendTextChanged = suspend;
+			_suspend = suspend;
 			this.SuspendPainting();
-
-
-			// Process the keywords
-			ProcessRegex(Text, 0, m_strKeywords, Settings.KeywordColor);
-			// Process numbers
-			if (Settings.EnableIntegers)
-				ProcessRegex(Text, 0, "\\b(?:[0-9]*\\.)?[0-9]+\\b", Settings.IntegerColor);
-			// Process strings
-			if (Settings.EnableStrings)
-				ProcessRegex(Text, 0, "\"[^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*\"", Settings.StringColor);
-			// Process comments
-			if (Settings.EnableComments && !string.IsNullOrEmpty(Settings.Comment))
-				ProcessRegex(Text, 0, Settings.Comment + ".*$", Settings.CommentColor);
-			if (!string.IsNullOrEmpty(Settings.QuoteIdentifier))
-				ProcessRegex(Text, 0, $"({Settings.QuoteIdentifier}.*?{Settings.QuoteIdentifier})", Settings.QuoteColor);
-
+			this.processText(Text, 0);
 			this.ResumePainting();
-			_suspendTextChanged = false;
+			_suspend = false;
+		}
+
+		private void processText(string text, int start)
+		{
+			ProcessRegex(text, start, _keywords, Settings.KeywordColor);
+			if (Settings.EnableIntegers)
+				ProcessRegex(text, start, "\\b(?:[0-9]*\\.)?[0-9]+\\b", Settings.IntegerColor);
+			if (Settings.EnableStrings)
+				ProcessRegex(text, start, $"{Settings.QuoteIdentifier}[^{Settings.QuoteIdentifier}\\\\\\r\\n]*(?:\\\\.[^{Settings.QuoteIdentifier}\\\\\\r\\n]*)*{Settings.QuoteIdentifier}", Settings.StringColor);
+			if (Settings.EnableComments && !string.IsNullOrEmpty(Settings.Comment))
+				ProcessRegex(text, start, Settings.Comment + ".*", Settings.CommentColor);
 		}
 
 		public void CommentSelected()
 		{
-			_suspendTextChanged = true;
+			_suspend = true;
 			this.SuspendPainting();
 			int nCurrentSelectionStart = SelectionStart;
 			int nCurrentSelectionEnd = SelectionStart + SelectionLength;
-			
+
 			// Find the start of the current line.
 			_lineStart = nCurrentSelectionStart;
 			while ((_lineStart > 0) && (Text[_lineStart - 1] != '\n'))
@@ -249,12 +211,12 @@ namespace PaJaMa.WinControls
 
 			SelectionStart = nCurrentSelectionStart;
 			this.ResumePainting();
-			_suspendTextChanged = false;
+			_suspend = false;
 		}
 
 		public void UnCommentSelected()
 		{
-			_suspendTextChanged = true;
+			_suspend = true;
 			this.SuspendPainting();
 			int nCurrentSelectionStart = SelectionStart;
 			int nCurrentSelectionEnd = SelectionStart + SelectionLength;
@@ -285,7 +247,7 @@ namespace PaJaMa.WinControls
 
 			SelectionStart = nCurrentSelectionStart;
 			this.ResumePainting();
-			_suspendTextChanged = false;
+			_suspend = false;
 		}
 
 		protected override void OnKeyUp(KeyEventArgs e)
@@ -296,122 +258,133 @@ namespace PaJaMa.WinControls
 				this.ProcessAllLines(true);
 			}
 		}
+
+		private DateTime _lastStack = DateTime.MinValue;
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			List<UndoRedoItem> addStack = null;
+			List<UndoRedoItem> removeStack = null;
+			if (e.Control && e.KeyCode == Keys.Z)
+			{
+				addStack = _redoStack;
+				removeStack = _undoStack;
+			}
+			else if (e.Control && e.KeyCode == Keys.Y)
+			{
+				addStack = _undoStack;
+				removeStack = _redoStack;
+			}
+			else if (!e.Control && !e.Shift)
+			{
+				if ((DateTime.Now - _lastStack).TotalMilliseconds < 1000) return;
+				_lastStack = DateTime.Now;
+				if ((!_undoStack.Any() || Text != _undoStack.Last().Text))
+				{
+					if (_undoStack.Count > 20) _undoStack.RemoveAt(0);
+					_undoStack.Add(new UndoRedoItem() { Text = Text, Position = SelectionStart });
+				}
+			}
+
+			if (removeStack != null)
+			{
+				if (removeStack.Any())
+				{
+					addStack.Add(new UndoRedoItem() { Text = Text, Position = SelectionStart });
+					var item = removeStack.Last();
+					removeStack.RemoveAt(removeStack.Count - 1);
+					_suspend = true;
+					Text = item.Text;
+					SuspendPainting();
+					processText(Text, 0);
+					_suspend = false;
+					ResumePainting();
+					SelectionStart = item.Position;
+					e.Handled = true;
+					return;
+				}
+			}
+			base.OnKeyDown(e);
+		}
+
+		private bool _somethingHighlighted;
+		private void resetSelectionHighlighting()
+		{
+			if (!_somethingHighlighted) return;
+			var currSelection = SelectionStart;
+			var currSelectionLength = SelectionLength;
+			SelectionStart = 0;
+			SelectionLength = Text.Length;
+			SelectionBackColor = Color.White;
+			SelectionLength = currSelectionLength;
+			SelectionStart = currSelection;
+			_somethingHighlighted = false;
+		}
+
+
+		protected override void OnMouseUp(MouseEventArgs mevent)
+		{
+			base.OnMouseUp(mevent);
+			_suspend = true;
+			SuspendPainting();
+			resetSelectionHighlighting();
+			if (SelectedText.Length > 1)
+			{
+				var matches = Regex.Matches(Text, $"\\b{Regex.Escape(SelectedText.Trim())}\\b");
+				if (matches.Count > 1)
+				{
+					var currSelection = SelectionStart;
+					foreach (Match m in matches)
+					{
+						if (m.Index != currSelection)
+						{
+							SelectionStart = m.Index;
+							SelectionBackColor = Settings.SelectionBackColor;
+						}
+					}
+					_somethingHighlighted = true;
+					SelectionStart = currSelection;
+				}
+			}
+			_suspend = false;
+			ResumePainting();
+		}
 	}
 
-	/// <summary>
-	/// Class to store syntax objects in.
-	/// </summary>
-	public class SyntaxList
-	{
-		public List<string> m_rgList = new List<string>();
-		public Color m_color = new Color();
-		public Color m_quoteColor = new Color();
-	}
-
-	/// <summary>
-	/// Settings for the keywords and colors.
-	/// </summary>
 	public class SyntaxSettings
 	{
-		SyntaxList m_rgKeywords = new SyntaxList();
-		Tuple<string, string> _commentBlockStartEnd;
-		string m_strComment = "";
-		Color m_colorComment = Color.Green;
-		Color m_colorString = Color.Gray;
-		Color m_colorInteger = Color.Red;
-		bool m_bEnableComments = true;
-		bool m_bEnableIntegers = true;
-		bool m_bEnableStrings = true;
-
-		#region Properties
-		/// <summary>
-		/// A list containing all keywords.
-		/// </summary>
-		public List<string> Keywords
-		{
-			get { return m_rgKeywords.m_rgList; }
-		}
-		/// <summary>
-		/// The color of keywords.
-		/// </summary>
-		public Color KeywordColor
-		{
-			get { return m_rgKeywords.m_color; }
-			set { m_rgKeywords.m_color = value; }
-		}
+		public List<string> Keywords { get; private set; }
+		public Color KeywordColor { get; set; }
 		public string QuoteIdentifier { get; set; }
-		/// <summary>
-		/// The quote of keywords.
-		/// </summary>
-		public Color QuoteColor
+		public string Comment { get; set; }
+		//public Tuple<string, string> CommentBlockStartEnd { get; set; }
+		public Color CommentColor { get; set; }
+		public bool EnableComments { get; set; }
+		public bool EnableIntegers { get; set; }
+		public bool EnableStrings { get; set; }
+		public Color StringColor { get; set; }
+		public Color IntegerColor { get; set; }
+		public bool HighlightSelected { get; set; }
+		public Color SelectionBackColor { get; set; }
+
+		public SyntaxSettings()
 		{
-			get { return m_rgKeywords.m_quoteColor; }
-			set { m_rgKeywords.m_quoteColor = value; }
+			this.Keywords = new List<string>();
+			this.KeywordColor = Color.Blue;
+			this.CommentColor = Color.Gray;
+			this.StringColor = Color.Gray;
+			this.IntegerColor = Color.Red;
+			this.SelectionBackColor = Color.LightGray;
+			this.QuoteIdentifier = "\"";
+			this.EnableComments = true;
+			this.EnableIntegers = true;
+			this.EnableStrings = true;
+			this.HighlightSelected = true;
 		}
-		/// <summary>
-		/// A string containing the comment identifier.
-		/// </summary>
-		public string Comment
-		{
-			get { return m_strComment; }
-			set { m_strComment = value; }
-		}
-		/// <summary>
-		/// A string containing the comment identifier.
-		/// </summary>
-		public Tuple<string, string> CommentBlockStartEnd
-		{
-			get { return _commentBlockStartEnd; }
-			set { _commentBlockStartEnd = value; }
-		}
-		/// <summary>
-		/// The color of comments.
-		/// </summary>
-		public Color CommentColor
-		{
-			get { return m_colorComment; }
-			set { m_colorComment = value; }
-		}
-		/// <summary>
-		/// Enables processing of comments if set to true.
-		/// </summary>
-		public bool EnableComments
-		{
-			get { return m_bEnableComments; }
-			set { m_bEnableComments = value; }
-		}
-		/// <summary>
-		/// Enables processing of integers if set to true.
-		/// </summary>
-		public bool EnableIntegers
-		{
-			get { return m_bEnableIntegers; }
-			set { m_bEnableIntegers = value; }
-		}
-		/// <summary>
-		/// Enables processing of strings if set to true.
-		/// </summary>
-		public bool EnableStrings
-		{
-			get { return m_bEnableStrings; }
-			set { m_bEnableStrings = value; }
-		}
-		/// <summary>
-		/// The color of strings.
-		/// </summary>
-		public Color StringColor
-		{
-			get { return m_colorString; }
-			set { m_colorString = value; }
-		}
-		/// <summary>
-		/// The color of integers.
-		/// </summary>
-		public Color IntegerColor
-		{
-			get { return m_colorInteger; }
-			set { m_colorInteger = value; }
-		}
-		#endregion
+	}
+
+	internal class UndoRedoItem
+	{
+		public string Text { get; set; }
+		public int Position { get; set; }
 	}
 }
