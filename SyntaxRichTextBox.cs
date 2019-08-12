@@ -9,21 +9,18 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Linq;
+using System.Windows.Threading;
+using PaJaMa.Common;
 
 namespace PaJaMa.WinControls
 {
 	public class SyntaxRichTextBox : System.Windows.Forms.RichTextBox
 	{
 		private bool _suspend = true;
-		private string _line = "";
-		private int _contentLength = 0;
-		private int _lineLength = 0;
-		private int _lineStart = 0;
-		private int _lineEnd = 0;
 		private string _keywords = "";
-		private int _currSelection = 0;
 		private List<UndoRedoItem> _undoStack = new List<UndoRedoItem>();
 		private List<UndoRedoItem> _redoStack = new List<UndoRedoItem>();
+		private DebounceDispatcher _dispatcher;
 
 		/// <summary>
 		/// The settings.
@@ -52,6 +49,7 @@ namespace PaJaMa.WinControls
 		public SyntaxRichTextBox() : base()
 		{
 			this.Settings = new SyntaxSettings();
+			_dispatcher = new DebounceDispatcher();
 		}
 
 		public void SuspendPainting()
@@ -80,56 +78,62 @@ namespace PaJaMa.WinControls
 			}
 		}
 
-		/// <summary>
-		/// OnTextChanged
-		/// </summary>
-		/// <param name="e"></param>
+		private DateTime _lastChange = DateTime.MinValue;
 		protected override void OnTextChanged(EventArgs e)
 		{
 			if (_suspend) return;
-			_contentLength = this.TextLength;
+			_dispatcher.Debounce(300, x =>
+			{
+				this.Invoke(new Action(() =>
+				{
+					// Process this line.
+					ProcessLine();
+					
+				}));
+			});
 
-			int nCurrentSelectionStart = SelectionStart;
-			int nCurrentSelectionLength = SelectionLength;
-
-			this.SuspendPainting();
-
-			// Find the start of the current line.
-			_lineStart = nCurrentSelectionStart;
-			while ((_lineStart > 0) && (Text[_lineStart - 1] != '\n'))
-				_lineStart--;
-			// Find the end of the current line.
-			_lineEnd = nCurrentSelectionStart;
-			while ((_lineEnd < Text.Length) && (Text[_lineEnd] != '\n'))
-				_lineEnd++;
-			// Calculate the length of the line.
-			_lineLength = _lineEnd - _lineStart;
-			// Get the current line.
-			_line = Text.Substring(_lineStart, _lineLength);
-
-			// Process this line.
-			ProcessLine();
-
-			this.ResumePainting();
 		}
 		/// <summary>
 		/// Process a line.
 		/// </summary>
 		private void ProcessLine()
 		{
+			_suspend = true;
+			this.SuspendPainting();
+
+			int currentSelectionStart = SelectionStart;
+			int currentSelectionLength = SelectionLength;
+
+			// Find the start of the current line.
+			int lineStart = currentSelectionStart;
+			while ((lineStart > 0) && (Text[lineStart - 1] != '\n'))
+				lineStart--;
+			// Find the end of the current line.
+			int lineEnd = currentSelectionLength + currentSelectionStart;
+			while ((lineEnd < Text.Length) && (Text[lineEnd] != '\n'))
+				lineEnd++;
+			// Calculate the length of the line.
+			int lineLength = lineEnd - lineStart;
+			// Get the current line.
+			string line = Text.Substring(lineStart, lineLength);
+
+			this.SuspendPainting();
 			// Save the position and make the whole line black
 			int nPosition = SelectionStart;
-			SelectionStart = _lineStart;
-			SelectionLength = _lineLength;
+			SelectionStart = lineStart;
+			SelectionLength = lineLength;
 			SelectionColor = Color.Black;
 
-			this.processText(_line, _lineStart);
+			this.processText(line, lineStart);
 
 			SelectionStart = nPosition;
 			SelectionLength = 0;
 			SelectionColor = Color.Black;
 
-			_currSelection = nPosition;
+			this.ResumePainting();
+
+			this.ResumePainting();
+			_suspend = false;
 		}
 		/// <summary>
 		/// Process a regular expression.
@@ -191,15 +195,15 @@ namespace PaJaMa.WinControls
 		{
 			_suspend = true;
 			this.SuspendPainting();
-			int nCurrentSelectionStart = SelectionStart;
-			int nCurrentSelectionEnd = SelectionStart + SelectionLength;
+			int currentSelectionStart = SelectionStart;
+			int currentSelectionEnd = SelectionStart + SelectionLength;
 
 			// Find the start of the current line.
-			_lineStart = nCurrentSelectionStart;
-			while ((_lineStart > 0) && (Text[_lineStart - 1] != '\n'))
-				_lineStart--;
+			int lineStart = currentSelectionStart;
+			while ((lineStart > 0) && (Text[lineStart - 1] != '\n'))
+				lineStart--;
 			SelectionLength = 0;
-			for (int i = _lineStart; i <= nCurrentSelectionEnd; i++)
+			for (int i = lineStart; i <= currentSelectionEnd; i++)
 			{
 				if (i == 0 || (i < Text.Length && Text[i - 1] == '\n'))
 				{
@@ -209,7 +213,7 @@ namespace PaJaMa.WinControls
 				}
 			}
 
-			SelectionStart = nCurrentSelectionStart;
+			SelectionStart = currentSelectionStart;
 			this.ResumePainting();
 			_suspend = false;
 		}
@@ -218,15 +222,15 @@ namespace PaJaMa.WinControls
 		{
 			_suspend = true;
 			this.SuspendPainting();
-			int nCurrentSelectionStart = SelectionStart;
-			int nCurrentSelectionEnd = SelectionStart + SelectionLength;
+			int currentSelectionStart = SelectionStart;
+			int currentSelectionEnd = SelectionStart + SelectionLength;
 
 			// Find the start of the current line.
-			_lineStart = nCurrentSelectionStart;
-			while ((_lineStart > 0) && (Text[_lineStart - 1] != '\n'))
-				_lineStart--;
+			int lineStart = currentSelectionStart;
+			while ((lineStart > 0) && (Text[lineStart - 1] != '\n'))
+				lineStart--;
 			SelectionLength = 0;
-			for (int i = _lineStart; i <= nCurrentSelectionEnd; i++)
+			for (int i = lineStart; i <= currentSelectionEnd; i++)
 			{
 				if (i == 0 || (i < Text.Length && Text[i - 1] == '\n'))
 				{
@@ -245,7 +249,7 @@ namespace PaJaMa.WinControls
 				}
 			}
 
-			SelectionStart = nCurrentSelectionStart;
+			SelectionStart = currentSelectionStart;
 			this.ResumePainting();
 			_suspend = false;
 		}
@@ -256,6 +260,10 @@ namespace PaJaMa.WinControls
 			if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V)
 			{
 				this.ProcessAllLines(true);
+			}
+			else if (e.KeyCode == Keys.Space)
+			{
+				this.ProcessLine();
 			}
 		}
 
