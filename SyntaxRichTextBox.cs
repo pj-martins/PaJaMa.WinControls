@@ -303,6 +303,9 @@ namespace PaJaMa.WinControls
 					_suspend = true;
 					Text = item.Text;
 					SuspendPainting();
+					SelectionStart = 0;
+					SelectionLength = Text.Length;
+					SelectionColor = Color.Black;
 					processText(Text, 0);
 					_suspend = false;
 					ResumePainting();
