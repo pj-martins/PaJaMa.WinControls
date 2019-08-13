@@ -54,6 +54,7 @@ namespace PaJaMa.WinControls
 
 		public void SuspendPainting()
 		{
+			_suspend = true;
 			if (_Painting)
 			{
 				_SuspendIndex = this.SelectionStart;
@@ -76,6 +77,7 @@ namespace PaJaMa.WinControls
 				_Painting = true;
 				this.Invalidate();
 			}
+			_suspend = false;
 		}
 
 		private DateTime _lastChange = DateTime.MinValue;
@@ -93,12 +95,22 @@ namespace PaJaMa.WinControls
 			});
 
 		}
+
+		public void InitLines()
+		{
+			this.SuspendPainting();
+			SelectionStart = 0;
+			SelectionLength = Text.Length;
+			SelectionColor = Color.Black;
+			this.processText(Text, 0);
+			this.ResumePainting();
+		}
+
 		/// <summary>
 		/// Process a line.
 		/// </summary>
 		private void ProcessLine()
 		{
-			_suspend = true;
 			this.SuspendPainting();
 
 			int currentSelectionStart = SelectionStart;
@@ -131,9 +143,6 @@ namespace PaJaMa.WinControls
 			SelectionColor = Color.Black;
 
 			this.ResumePainting();
-
-			this.ResumePainting();
-			_suspend = false;
 		}
 		/// <summary>
 		/// Process a regular expression.
@@ -171,15 +180,6 @@ namespace PaJaMa.WinControls
 			}
 		}
 
-		public void ProcessAllLines(bool suspend)
-		{
-			_suspend = suspend;
-			this.SuspendPainting();
-			this.processText(Text, 0);
-			this.ResumePainting();
-			_suspend = false;
-		}
-
 		private void processText(string text, int start)
 		{
 			ProcessRegex(text, start, _keywords, Settings.KeywordColor);
@@ -193,10 +193,12 @@ namespace PaJaMa.WinControls
 
 		public void CommentSelected()
 		{
-			_suspend = true;
 			this.SuspendPainting();
 			int currentSelectionStart = SelectionStart;
 			int currentSelectionEnd = SelectionStart + SelectionLength;
+
+			if (_undoStack.Count > 20) _undoStack.RemoveAt(0);
+			_undoStack.Add(new UndoRedoItem() { Text = Text, Position = SelectionStart });
 
 			// Find the start of the current line.
 			int lineStart = currentSelectionStart;
@@ -214,16 +216,18 @@ namespace PaJaMa.WinControls
 			}
 
 			SelectionStart = currentSelectionStart;
+			this.processText(Text, 0);
 			this.ResumePainting();
-			_suspend = false;
 		}
 
 		public void UnCommentSelected()
 		{
-			_suspend = true;
 			this.SuspendPainting();
 			int currentSelectionStart = SelectionStart;
 			int currentSelectionEnd = SelectionStart + SelectionLength;
+
+			if (_undoStack.Count > 20) _undoStack.RemoveAt(0);
+			_undoStack.Add(new UndoRedoItem() { Text = Text, Position = SelectionStart });
 
 			// Find the start of the current line.
 			int lineStart = currentSelectionStart;
@@ -249,9 +253,9 @@ namespace PaJaMa.WinControls
 				}
 			}
 
+			this.processText(Text, 0);
 			SelectionStart = currentSelectionStart;
 			this.ResumePainting();
-			_suspend = false;
 		}
 
 		protected override void OnKeyUp(KeyEventArgs e)
@@ -259,7 +263,9 @@ namespace PaJaMa.WinControls
 			base.OnKeyUp(e);
 			if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V)
 			{
-				this.ProcessAllLines(true);
+				this.SuspendPainting();
+				this.processText(Text, 0);
+				this.ResumePainting();
 			}
 			else if (e.KeyCode == Keys.Space)
 			{
@@ -300,14 +306,12 @@ namespace PaJaMa.WinControls
 					addStack.Add(new UndoRedoItem() { Text = Text, Position = SelectionStart });
 					var item = removeStack.Last();
 					removeStack.RemoveAt(removeStack.Count - 1);
-					_suspend = true;
-					Text = item.Text;
 					SuspendPainting();
+					Text = item.Text;
 					SelectionStart = 0;
 					SelectionLength = Text.Length;
 					SelectionColor = Color.Black;
 					processText(Text, 0);
-					_suspend = false;
 					ResumePainting();
 					SelectionStart = item.Position;
 					e.Handled = true;
@@ -335,7 +339,6 @@ namespace PaJaMa.WinControls
 		protected override void OnMouseUp(MouseEventArgs mevent)
 		{
 			base.OnMouseUp(mevent);
-			_suspend = true;
 			SuspendPainting();
 			resetSelectionHighlighting();
 			if (SelectedText.Length > 1)
@@ -356,7 +359,6 @@ namespace PaJaMa.WinControls
 					SelectionStart = currSelection;
 				}
 			}
-			_suspend = false;
 			ResumePainting();
 		}
 	}
@@ -367,7 +369,7 @@ namespace PaJaMa.WinControls
 		public Color KeywordColor { get; set; }
 		public string QuoteIdentifier { get; set; }
 		public string Comment { get; set; }
-		//public Tuple<string, string> CommentBlockStartEnd { get; set; }
+		public Tuple<string, string> CommentBlockStartEnd { get; set; }
 		public Color CommentColor { get; set; }
 		public bool EnableComments { get; set; }
 		public bool EnableIntegers { get; set; }
