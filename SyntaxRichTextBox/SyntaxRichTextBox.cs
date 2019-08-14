@@ -12,7 +12,7 @@ using System.Linq;
 using System.Windows.Threading;
 using PaJaMa.Common;
 
-namespace PaJaMa.WinControls
+namespace PaJaMa.WinControls.SyntaxRichTextBox
 {
 	public class SyntaxRichTextBox : System.Windows.Forms.RichTextBox
 	{
@@ -88,7 +88,6 @@ namespace PaJaMa.WinControls
 			{
 				this.Invoke(new Action(() =>
 				{
-					// Process this line.
 					ProcessLine();
 					
 				}));
@@ -288,6 +287,13 @@ namespace PaJaMa.WinControls
 				addStack = _undoStack;
 				removeStack = _redoStack;
 			}
+			else if (e.Control && (e.KeyCode == Keys.F || e.KeyCode == Keys.H))
+			{
+				var frm = new frmFindReplace();
+				frm.TextBox = this;
+				frm.chkReplace.Checked = e.KeyCode == Keys.H;
+				frm.Show();
+			}
 			else if (!e.Control && !e.Shift)
 			{
 				if ((DateTime.Now - _lastStack).TotalMilliseconds < 1000) return;
@@ -340,6 +346,12 @@ namespace PaJaMa.WinControls
 		{
 			base.OnMouseUp(mevent);
 			SuspendPainting();
+			HighlightSelection();
+			ResumePainting();
+		}
+
+		public void HighlightSelection()
+		{
 			resetSelectionHighlighting();
 			if (SelectedText.Length > 1)
 			{
@@ -359,7 +371,6 @@ namespace PaJaMa.WinControls
 					SelectionStart = currSelection;
 				}
 			}
-			ResumePainting();
 		}
 	}
 

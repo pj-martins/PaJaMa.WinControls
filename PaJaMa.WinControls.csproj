@@ -240,7 +240,13 @@
     <Compile Include="ScrollableMessageBox.Designer.cs">
       <DependentUpon>ScrollableMessageBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="SyntaxRichTextBox.cs">
+    <Compile Include="SyntaxRichTextBox\frmFindReplace.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SyntaxRichTextBox\frmFindReplace.Designer.cs">
+      <DependentUpon>frmFindReplace.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SyntaxRichTextBox\SyntaxRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="TabControl\Tab.cs">
@@ -328,6 +334,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ScrollableMessageBox.resx">
       <DependentUpon>ScrollableMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SyntaxRichTextBox\frmFindReplace.resx">
+      <DependentUpon>frmFindReplace.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TabControl\Tab.resx">
       <DependentUpon>Tab.cs</DependentUpon>
