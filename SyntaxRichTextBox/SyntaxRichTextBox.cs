@@ -345,7 +345,7 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 		protected override void OnMouseUp(MouseEventArgs mevent)
 		{
 			base.OnMouseUp(mevent);
-			if (Regex.Match(SelectedText, "[\n\t, ]").Success) return;
+			if (SelectedText.Length > 50) return;
 
 			SuspendPainting();
 			HighlightSelection();
@@ -357,7 +357,7 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 			resetSelectionHighlighting();
 			if (SelectedText.Length > 1)
 			{
-				var matches = Regex.Matches(Text, $"{Regex.Escape(SelectedText.Trim())}");
+				var matches = Regex.Matches(Text, $"{Regex.Escape(SelectedText.Trim())}", RegexOptions.IgnoreCase);
 				if (matches.Count > 1)
 				{
 					var currSelection = SelectionStart;
