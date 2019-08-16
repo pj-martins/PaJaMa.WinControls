@@ -320,9 +320,9 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 					processText(Text, 0);
 					ResumePainting();
 					SelectionStart = item.Position;
-					e.Handled = true;
-					return;
 				}
+				e.Handled = true;
+				return;
 			}
 			base.OnKeyDown(e);
 		}
