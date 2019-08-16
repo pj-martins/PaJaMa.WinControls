@@ -89,7 +89,7 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 				this.Invoke(new Action(() =>
 				{
 					ProcessLine();
-					
+
 				}));
 			});
 
@@ -345,6 +345,8 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 		protected override void OnMouseUp(MouseEventArgs mevent)
 		{
 			base.OnMouseUp(mevent);
+			if (Regex.Match(SelectedText, "[\n\t, ]").Success) return;
+
 			SuspendPainting();
 			HighlightSelection();
 			ResumePainting();
@@ -355,7 +357,7 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 			resetSelectionHighlighting();
 			if (SelectedText.Length > 1)
 			{
-				var matches = Regex.Matches(Text, $"\\b{Regex.Escape(SelectedText.Trim())}\\b");
+				var matches = Regex.Matches(Text, $"{Regex.Escape(SelectedText.Trim())}");
 				if (matches.Count > 1)
 				{
 					var currSelection = SelectionStart;
