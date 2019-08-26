@@ -90,7 +90,6 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 				this.Invoke(new Action(() =>
 				{
 					ProcessLine();
-
 				}));
 			});
 
@@ -273,6 +272,28 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 			{
 				this.ProcessLine();
 			}
+			if (e.KeyCode == Keys.Enter)
+			{
+				this.ProcessLine();
+				if (this.SelectionStart > 0 && this.SelectionLength == 0)
+				{
+					int lineStart = this.SelectionStart - 1;
+					while ((lineStart > 0) && (Text[lineStart - 1] != '\n'))
+					{
+						lineStart--;
+					}
+					var indentMatch = Regex.Match(Text.Substring(lineStart, (this.SelectionStart - lineStart)),
+						"^([ \t]+)");
+					if (indentMatch.Success)
+					{
+						this.SuspendPainting();
+						this.SelectedText = indentMatch.Groups[1].Value;
+						this.ResumePainting();
+						this.SelectionStart += indentMatch.Groups[1].Value.Length;
+					}
+				}
+
+			}
 		}
 
 		private DateTime _lastStack = DateTime.MinValue;
@@ -406,6 +427,7 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 		public Color IntegerColor { get; set; }
 		public bool HighlightSelected { get; set; }
 		public Color SelectionBackColor { get; set; }
+		public bool AutoIndent { get; set; }
 
 		public SyntaxSettings()
 		{
@@ -420,6 +442,7 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 			this.EnableIntegers = true;
 			this.EnableStrings = true;
 			this.HighlightSelected = true;
+			this.AutoIndent = true;
 		}
 	}
 
