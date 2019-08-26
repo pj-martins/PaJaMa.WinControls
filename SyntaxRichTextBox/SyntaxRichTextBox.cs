@@ -21,6 +21,7 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 		private List<UndoRedoItem> _undoStack = new List<UndoRedoItem>();
 		private List<UndoRedoItem> _redoStack = new List<UndoRedoItem>();
 		private DebounceDispatcher _dispatcher;
+		private frmFindReplace _findForm;
 
 		/// <summary>
 		/// The settings.
@@ -181,6 +182,8 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 
 		private void processText(string text, int start)
 		{
+			if (text.Length > 50000) text = text.Substring(0, 50000);
+
 			ProcessRegex(text, start, _keywords, Settings.KeywordColor);
 			if (Settings.EnableIntegers)
 				ProcessRegex(text, start, "\\b(?:[0-9]*\\.)?[0-9]+\\b", Settings.IntegerColor);
@@ -289,10 +292,22 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 			}
 			else if (e.Control && (e.KeyCode == Keys.F || e.KeyCode == Keys.H))
 			{
-				var frm = new frmFindReplace();
-				frm.TextBox = this;
-				frm.chkReplace.Checked = e.KeyCode == Keys.H;
-				frm.Show();
+				if (_findForm != null)
+				{
+					_findForm.Focus();
+				}
+				else
+				{
+					_findForm = new frmFindReplace();
+					_findForm.TextBox = this;
+					_findForm.chkReplace.Checked = e.KeyCode == Keys.H;
+					_findForm.FormClosed += (object sender, FormClosedEventArgs args) => _findForm = null;
+					_findForm.Show();
+				}
+			}
+			else if (e.KeyCode == Keys.F3 && _findForm != null)
+			{
+				_findForm.Find(e.Shift);
 			}
 			else if (!e.Control && !e.Shift)
 			{

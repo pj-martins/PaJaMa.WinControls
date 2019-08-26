@@ -20,7 +20,7 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 			InitializeComponent();
 		}
 
-		private bool find(bool previous = false, bool somethingFound = true)
+		public bool Find(bool previous = false, bool somethingFound = true)
 		{
 			int currSelectionStart = TextBox.SelectionStart + (previous ? 0 : TextBox.SelectionLength);
 			//string textToSearch = previous ? TextBox.Text.Substring(0, currSelectionStart) : TextBox.Text.Substring(currSelectionStart);
@@ -58,13 +58,13 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 			{
 				TextBox.SelectionStart = TextBox.Text.Length;
 				TextBox.SelectionLength = 0;
-				return find(true, false);
+				return Find(true, false);
 			}
 			else if (currSelectionStart > 0 && somethingFound)
 			{
 				TextBox.SelectionStart = 0;
 				TextBox.SelectionLength = 0;
-				return find(false, false);
+				return Find(false, false);
 			}
 			else if (!somethingFound)
 			{
@@ -80,17 +80,17 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 
 		private void BtnFind_Click(object sender, EventArgs e)
 		{
-			this.find();
+			this.Find();
 		}
 
 		private void BtnPrevious_Click(object sender, EventArgs e)
 		{
-			this.find(true);
+			this.Find(true);
 		}
 
 		private void TxtFind_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Enter) this.find();
+			if (e.KeyCode == Keys.Enter) this.Find();
 		}
 
 		private void FrmFindReplace_Load(object sender, EventArgs e)
@@ -106,7 +106,7 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 		private void BtnReplace_Click(object sender, EventArgs e)
 		{
 			TextBox.SuspendPainting();
-			if (find())
+			if (Find())
 			{
 				TextBox.SelectedText = txtReplace.Text;
 			}
@@ -117,7 +117,7 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 		{
 			int selectionStart = TextBox.SelectionStart;
 			TextBox.SuspendPainting();
-			while (find())
+			while (Find())
 			{
 				TextBox.SelectedText = txtReplace.Text;
 			}
