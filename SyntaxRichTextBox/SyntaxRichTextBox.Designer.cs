@@ -28,7 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.txtQuery = new System.Windows.Forms.RichTextBox();
+			this.TextBox = new System.Windows.Forms.RichTextBox();
 			this.txtLines = new System.Windows.Forms.TextBox();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.panel1.SuspendLayout();
@@ -36,21 +36,21 @@
 			// 
 			// txtQuery
 			// 
-			this.txtQuery.AcceptsTab = true;
-			this.txtQuery.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.txtQuery.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.txtQuery.Location = new System.Drawing.Point(35, 0);
-			this.txtQuery.Margin = new System.Windows.Forms.Padding(20, 3, 3, 3);
-			this.txtQuery.Name = "txtQuery";
-			this.txtQuery.Size = new System.Drawing.Size(782, 644);
-			this.txtQuery.TabIndex = 2;
-			this.txtQuery.Text = "";
-			this.txtQuery.VScroll += new System.EventHandler(this.TxtQuery_VScroll);
-			this.txtQuery.SizeChanged += new System.EventHandler(this.TxtQuery_SizeChanged);
-			this.txtQuery.TextChanged += new System.EventHandler(this.txtQuery_TextChanged);
-			this.txtQuery.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtQuery_KeyDown);
-			this.txtQuery.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtQuery_KeyUp);
-			this.txtQuery.MouseUp += new System.Windows.Forms.MouseEventHandler(this.txtQuery_MouseUp);
+			this.TextBox.AcceptsTab = true;
+			this.TextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.TextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.TextBox.Location = new System.Drawing.Point(35, 0);
+			this.TextBox.Margin = new System.Windows.Forms.Padding(20, 3, 3, 3);
+			this.TextBox.Name = "txtQuery";
+			this.TextBox.Size = new System.Drawing.Size(782, 644);
+			this.TextBox.TabIndex = 2;
+			this.TextBox.Text = "";
+			this.TextBox.VScroll += new System.EventHandler(this.TxtQuery_VScroll);
+			this.TextBox.SizeChanged += new System.EventHandler(this.TxtQuery_SizeChanged);
+			this.TextBox.TextChanged += new System.EventHandler(this.txtQuery_TextChanged);
+			this.TextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtQuery_KeyDown);
+			this.TextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtQuery_KeyUp);
+			this.TextBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.txtQuery_MouseUp);
 			// 
 			// txtLines
 			// 
@@ -68,7 +68,7 @@
 			// panel1
 			// 
 			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.panel1.Controls.Add(this.txtQuery);
+			this.panel1.Controls.Add(this.TextBox);
 			this.panel1.Controls.Add(this.txtLines);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panel1.Location = new System.Drawing.Point(0, 0);
@@ -91,7 +91,7 @@
 
 		#endregion
 
-		private System.Windows.Forms.RichTextBox txtQuery;
+		public System.Windows.Forms.RichTextBox TextBox;
 		private System.Windows.Forms.TextBox txtLines;
 		private System.Windows.Forms.Panel panel1;
 	}
