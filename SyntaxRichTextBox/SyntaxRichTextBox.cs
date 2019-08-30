@@ -1,38 +1,27 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
-using PaJaMa.Common;
-using System.Runtime.InteropServices;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Linq;
+using System.Windows.Threading;
+using PaJaMa.Common;
 
 namespace PaJaMa.WinControls.SyntaxRichTextBox
 {
-	public partial class SyntaxRichTextBox : UserControl
+	public class SyntaxRichTextBox : RichTextBox
 	{
-		public SyntaxRichTextBox()
-		{
-			InitializeComponent();
-			this.Settings = new SyntaxSettings();
-			_dispatcher = new DebounceDispatcher();
-		}
-
 		private bool _suspend = true;
 		private string _keywords = "";
 		private List<UndoRedoItem> _undoStack = new List<UndoRedoItem>();
 		private List<UndoRedoItem> _redoStack = new List<UndoRedoItem>();
 		private DebounceDispatcher _dispatcher;
 		private frmFindReplace _findForm;
-
-		public int SelectionStart { get => TextBox.SelectionStart; set => TextBox.SelectionStart = value; }
-		public int SelectionLength { get => TextBox.SelectionLength; set => TextBox.SelectionLength = value; }
-		public string SelectedText { get => TextBox.SelectedText; set => TextBox.SelectedText = value; }
-		public bool ReadOnly { get => TextBox.ReadOnly; set => TextBox.ReadOnly = value; }
 
 		/// <summary>
 		/// The settings.
@@ -58,18 +47,22 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 		int _SuspendIndex = 0;
 		int _SuspendLength = 0;
 
-		public override string Text { get => TextBox.Text; set => TextBox.Text = value; }
+		public SyntaxRichTextBox() : base()
+		{
+			this.Settings = new SyntaxSettings();
+			_dispatcher = new DebounceDispatcher();
+		}
 
 		public void SuspendPainting()
 		{
 			_suspend = true;
 			if (_Painting)
 			{
-				_SuspendIndex = TextBox.SelectionStart;
-				_SuspendLength = TextBox.SelectionLength;
-				SendMessage(this.TextBox.Handle, EM_GETSCROLLPOS, 0, ref _ScrollPoint);
-				SendMessage(this.TextBox.Handle, WM_SETREDRAW, 0, IntPtr.Zero);
-				_EventMask = SendMessage(this.TextBox.Handle, EM_GETEVENTMASK, 0, IntPtr.Zero);
+				_SuspendIndex = this.SelectionStart;
+				_SuspendLength = this.SelectionLength;
+				SendMessage(this.Handle, EM_GETSCROLLPOS, 0, ref _ScrollPoint);
+				SendMessage(this.Handle, WM_SETREDRAW, 0, IntPtr.Zero);
+				_EventMask = SendMessage(this.Handle, EM_GETEVENTMASK, 0, IntPtr.Zero);
 				_Painting = false;
 			}
 		}
@@ -78,18 +71,18 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 		{
 			if (!_Painting)
 			{
-				this.TextBox.Select(_SuspendIndex, _SuspendLength);
-				SendMessage(this.TextBox.Handle, EM_SETSCROLLPOS, 0, ref _ScrollPoint);
-				SendMessage(this.TextBox.Handle, EM_SETEVENTMASK, 0, _EventMask);
-				SendMessage(this.TextBox.Handle, WM_SETREDRAW, 1, IntPtr.Zero);
+				this.Select(_SuspendIndex, _SuspendLength);
+				SendMessage(this.Handle, EM_SETSCROLLPOS, 0, ref _ScrollPoint);
+				SendMessage(this.Handle, EM_SETEVENTMASK, 0, _EventMask);
+				SendMessage(this.Handle, WM_SETREDRAW, 1, IntPtr.Zero);
 				_Painting = true;
-				TextBox.Invalidate();
+				this.Invalidate();
 			}
 			_suspend = false;
 		}
 
 		private DateTime _lastChange = DateTime.MinValue;
-		private void txtQuery_TextChanged(object sender, EventArgs e)
+		protected override void OnTextChanged(EventArgs e)
 		{
 			if (_suspend) return;
 			_dispatcher.Debounce(300, x =>
@@ -105,12 +98,11 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 		public void InitLines()
 		{
 			this.SuspendPainting();
-			TextBox.SelectionStart = 0;
-			TextBox.SelectionLength = Text.Length;
-			TextBox.SelectionColor = Color.Black;
+			this.SelectionStart = 0;
+			this.SelectionLength = Text.Length;
+			this.SelectionColor = Color.Black;
 			this.processText(Text, 0);
 			this.ResumePainting();
-			drawLineNumbers();
 		}
 
 		/// <summary>
@@ -120,8 +112,8 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 		{
 			this.SuspendPainting();
 
-			int currentSelectionStart = TextBox.SelectionStart;
-			int currentSelectionLength = TextBox.SelectionLength;
+			int currentSelectionStart = this.SelectionStart;
+			int currentSelectionLength = this.SelectionLength;
 
 			// Find the start of the current line.
 			int lineStart = currentSelectionStart;
@@ -138,16 +130,16 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 
 			this.SuspendPainting();
 			// Save the position and make the whole line black
-			int nPosition = TextBox.SelectionStart;
-			TextBox.SelectionStart = lineStart;
-			TextBox.SelectionLength = lineLength;
-			TextBox.SelectionColor = Color.Black;
+			int nPosition = this.SelectionStart;
+			this.SelectionStart = lineStart;
+			this.SelectionLength = lineLength;
+			this.SelectionColor = Color.Black;
 
 			this.processText(line, lineStart);
 
-			TextBox.SelectionStart = nPosition;
-			TextBox.SelectionLength = 0;
-			TextBox.SelectionColor = Color.Black;
+			this.SelectionStart = nPosition;
+			this.SelectionLength = 0;
+			this.SelectionColor = Color.Black;
 
 			this.ResumePainting();
 		}
@@ -166,9 +158,9 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 				// Process the words
 				int nStart = start + regMatch.Index;
 				int nLenght = regMatch.Length;
-				TextBox.SelectionStart = nStart;
-				TextBox.SelectionLength = nLenght;
-				TextBox.SelectionColor = color;
+				this.SelectionStart = nStart;
+				this.SelectionLength = nLenght;
+				this.SelectionColor = color;
 			}
 		}
 		/// <summary>
@@ -203,28 +195,28 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 		public void CommentSelected()
 		{
 			this.SuspendPainting();
-			int currentSelectionStart = TextBox.SelectionStart;
-			int currentSelectionEnd = TextBox.SelectionStart + TextBox.SelectionLength;
+			int currentSelectionStart = this.SelectionStart;
+			int currentSelectionEnd = this.SelectionStart + this.SelectionLength;
 
 			if (_undoStack.Count > 20) _undoStack.RemoveAt(0);
-			_undoStack.Add(new UndoRedoItem() { Text = Text, Position = TextBox.SelectionStart });
+			_undoStack.Add(new UndoRedoItem() { Text = Text, Position = this.SelectionStart });
 
 			// Find the start of the current line.
 			int lineStart = currentSelectionStart;
 			while ((lineStart > 0) && (Text[lineStart - 1] != '\n'))
 				lineStart--;
-			TextBox.SelectionLength = 0;
+			this.SelectionLength = 0;
 			for (int i = lineStart; i <= currentSelectionEnd; i++)
 			{
 				if (i == 0 || (i < Text.Length && Text[i - 1] == '\n'))
 				{
-					TextBox.SelectionStart = i;
-					TextBox.SelectedText = this.Settings.Comment + " ";
-					TextBox.SelectionLength = 0;
+					this.SelectionStart = i;
+					this.SelectedText = this.Settings.Comment + " ";
+					this.SelectionLength = 0;
 				}
 			}
 
-			TextBox.SelectionStart = currentSelectionStart;
+			this.SelectionStart = currentSelectionStart;
 			this.processText(Text, 0);
 			this.ResumePainting();
 		}
@@ -232,43 +224,44 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 		public void UnCommentSelected()
 		{
 			this.SuspendPainting();
-			int currentSelectionStart = TextBox.SelectionStart;
-			int currentSelectionEnd = TextBox.SelectionStart + TextBox.SelectionLength;
+			int currentSelectionStart = this.SelectionStart;
+			int currentSelectionEnd = this.SelectionStart + this.SelectionLength;
 
 			if (_undoStack.Count > 20) _undoStack.RemoveAt(0);
-			_undoStack.Add(new UndoRedoItem() { Text = Text, Position = TextBox.SelectionStart });
+			_undoStack.Add(new UndoRedoItem() { Text = Text, Position = this.SelectionStart });
 
 			// Find the start of the current line.
 			int lineStart = currentSelectionStart;
 			while ((lineStart > 0) && (Text[lineStart - 1] != '\n'))
 				lineStart--;
-			TextBox.SelectionLength = 0;
+			this.SelectionLength = 0;
 			for (int i = lineStart; i <= currentSelectionEnd; i++)
 			{
 				if (i == 0 || (i < Text.Length && Text[i - 1] == '\n'))
 				{
-					TextBox.SelectionStart = i;
-					TextBox.SelectionLength = this.Settings.Comment.Length;
-					if (TextBox.SelectedText == this.Settings.Comment)
+					this.SelectionStart = i;
+					this.SelectionLength = this.Settings.Comment.Length;
+					if (this.SelectedText == this.Settings.Comment)
 					{
-						TextBox.SelectedText = string.Empty;
+						this.SelectedText = string.Empty;
 					}
-					TextBox.SelectionStart = i;
-					TextBox.SelectionLength = 1;
-					if (TextBox.SelectedText == " ")
+					this.SelectionStart = i;
+					this.SelectionLength = 1;
+					if (this.SelectedText == " ")
 					{
-						TextBox.SelectedText = string.Empty;
+						this.SelectedText = string.Empty;
 					}
 				}
 			}
 
 			this.processText(Text, 0);
-			TextBox.SelectionStart = currentSelectionStart;
+			this.SelectionStart = currentSelectionStart;
 			this.ResumePainting();
 		}
 
-		private void txtQuery_KeyUp(object sender, KeyEventArgs e)
+		protected override void OnKeyUp(KeyEventArgs e)
 		{
+			base.OnKeyUp(e);
 			if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V)
 			{
 				this.SuspendPainting();
@@ -282,22 +275,21 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 			if (e.KeyCode == Keys.Enter)
 			{
 				this.ProcessLine();
-				this.drawLineNumbers();
-				if (TextBox.SelectionStart > 0 && TextBox.SelectionLength == 0)
+				if (this.SelectionStart > 0 && this.SelectionLength == 0)
 				{
-					int lineStart = TextBox.SelectionStart - 1;
+					int lineStart = this.SelectionStart - 1;
 					while ((lineStart > 0) && (Text[lineStart - 1] != '\n'))
 					{
 						lineStart--;
 					}
-					var indentMatch = Regex.Match(Text.Substring(lineStart, (TextBox.SelectionStart - lineStart)),
+					var indentMatch = Regex.Match(Text.Substring(lineStart, (this.SelectionStart - lineStart)),
 						"^([ \t]+)");
 					if (indentMatch.Success)
 					{
 						this.SuspendPainting();
-						this.TextBox.SelectedText = indentMatch.Groups[1].Value;
+						this.SelectedText = indentMatch.Groups[1].Value;
 						this.ResumePainting();
-						TextBox.SelectionStart += indentMatch.Groups[1].Value.Length;
+						this.SelectionStart += indentMatch.Groups[1].Value.Length;
 					}
 				}
 
@@ -305,7 +297,7 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 		}
 
 		private DateTime _lastStack = DateTime.MinValue;
-		private void txtQuery_KeyDown(object sender, KeyEventArgs e)
+		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			List<UndoRedoItem> addStack = null;
 			List<UndoRedoItem> removeStack = null;
@@ -330,7 +322,7 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 					_findForm = new frmFindReplace();
 					_findForm.TextBox = this;
 					_findForm.chkReplace.Checked = e.KeyCode == Keys.H;
-					_findForm.FormClosed += (object sender2, FormClosedEventArgs args) => _findForm = null;
+					_findForm.FormClosed += (object sender, FormClosedEventArgs args) => _findForm = null;
 					_findForm.Show();
 				}
 			}
@@ -345,7 +337,7 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 				if ((!_undoStack.Any() || Text != _undoStack.Last().Text))
 				{
 					if (_undoStack.Count > 20) _undoStack.RemoveAt(0);
-					_undoStack.Add(new UndoRedoItem() { Text = Text, Position = TextBox.SelectionStart });
+					_undoStack.Add(new UndoRedoItem() { Text = Text, Position = this.SelectionStart });
 				}
 			}
 
@@ -353,17 +345,17 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 			{
 				if (removeStack.Any())
 				{
-					addStack.Add(new UndoRedoItem() { Text = Text, Position = TextBox.SelectionStart });
+					addStack.Add(new UndoRedoItem() { Text = Text, Position = this.SelectionStart });
 					var item = removeStack.Last();
 					removeStack.RemoveAt(removeStack.Count - 1);
 					SuspendPainting();
 					Text = item.Text;
-					TextBox.SelectionStart = 0;
-					TextBox.SelectionLength = Text.Length;
-					TextBox.SelectionColor = Color.Black;
+					this.SelectionStart = 0;
+					this.SelectionLength = Text.Length;
+					this.SelectionColor = Color.Black;
 					processText(Text, 0);
 					ResumePainting();
-					TextBox.SelectionStart = item.Position;
+					this.SelectionStart = item.Position;
 				}
 				e.Handled = true;
 				return;
@@ -375,77 +367,58 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 		private void resetSelectionHighlighting()
 		{
 			if (!_somethingHighlighted) return;
-			var currSelection = TextBox.SelectionStart;
-			var currSelectionLength = TextBox.SelectionLength;
-			TextBox.SelectionStart = 0;
-			TextBox.SelectionLength = Text.Length;
-			TextBox.SelectionBackColor = Color.White;
-			TextBox.SelectionLength = currSelectionLength;
-			TextBox.SelectionStart = currSelection;
+			var currSelection = this.SelectionStart;
+			var currSelectionLength = this.SelectionLength;
+			this.SelectionStart = 0;
+			this.SelectionLength = Text.Length;
+			this.SelectionBackColor = Color.White;
+			this.SelectionLength = currSelectionLength;
+			this.SelectionStart = currSelection;
 			_somethingHighlighted = false;
 		}
 
 
-		private void txtQuery_MouseUp(object sender, MouseEventArgs e)
+		protected override void OnMouseUp(MouseEventArgs mevent)
 		{
-			if (TextBox.SelectedText.Length > 50) return;
+			base.OnMouseUp(mevent);
+			if (this.SelectedText.Length > 50 || this.Text.Length > 1000) return;
 
 			SuspendPainting();
 			HighlightSelection();
 			ResumePainting();
 		}
 
+		protected override void OnMouseDoubleClick(MouseEventArgs e)
+		{
+			base.OnMouseDoubleClick(e);
+			//if (this.SelectedText.Length > 50) return;
+
+			//SuspendPainting();
+			//HighlightSelection();
+			//ResumePainting();
+		}
+
 		public void HighlightSelection()
 		{
 			resetSelectionHighlighting();
-			if (TextBox.SelectedText.Length > 1)
+			if (this.SelectedText.Length > 1)
 			{
-				var matches = Regex.Matches(Text, $"{Regex.Escape(TextBox.SelectedText.Trim())}", RegexOptions.IgnoreCase);
+				var matches = Regex.Matches(Text, $"{Regex.Escape(this.SelectedText.Trim())}", RegexOptions.IgnoreCase);
 				if (matches.Count > 1)
 				{
-					var currSelection = TextBox.SelectionStart;
+					var currSelection = this.SelectionStart;
 					foreach (Match m in matches)
 					{
 						if (m.Index != currSelection)
 						{
-							TextBox.SelectionStart = m.Index;
-							TextBox.SelectionBackColor = Settings.SelectionBackColor;
+							this.SelectionStart = m.Index;
+							this.SelectionBackColor = Settings.SelectionBackColor;
 						}
 					}
 					_somethingHighlighted = true;
-					TextBox.SelectionStart = currSelection;
+					this.SelectionStart = currSelection;
 				}
 			}
-		}
-
-		public void AppendText(string text)
-		{
-			TextBox.AppendText(text);
-		}
-
-		private void drawLineNumbers()
-		{
-			txtLines.SuspendLayout();
-			int firstIndex = TextBox.GetCharIndexFromPosition(new Point(0, 0));
-			int firstLine = TextBox.GetLineFromCharIndex(firstIndex);
-			int lastIndex = TextBox.GetCharIndexFromPosition(new Point(TextBox.ClientRectangle.Width, TextBox.ClientRectangle.Height));
-			int lastLine = TextBox.GetLineFromCharIndex(lastIndex);
-			txtLines.Text = string.Empty;
-			for (int i = firstLine; i <= lastLine + 2; i++)
-			{
-				txtLines.Text += (i + 1) + " \r\n";
-			}
-			txtLines.ResumeLayout();
-		}
-
-		private void TxtQuery_VScroll(object sender, EventArgs e)
-		{
-			drawLineNumbers();
-		}
-
-		private void TxtQuery_SizeChanged(object sender, EventArgs e)
-		{
-			drawLineNumbers();
 		}
 	}
 

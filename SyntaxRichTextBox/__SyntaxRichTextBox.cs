@@ -1,34 +1,38 @@
-//using System;
+﻿//using System;
 //using System.Collections.Generic;
-//using System.Text;
-//using System.IO;
-//using System.Windows.Forms;
 //using System.ComponentModel;
-//using System.Text.RegularExpressions;
 //using System.Drawing;
-//using System.Runtime.InteropServices;
-//using System.Threading;
+//using System.Data;
 //using System.Linq;
-//using System.Windows.Threading;
+//using System.Text;
+//using System.Threading.Tasks;
+//using System.Windows.Forms;
 //using PaJaMa.Common;
+//using System.Runtime.InteropServices;
+//using System.Text.RegularExpressions;
 
 //namespace PaJaMa.WinControls.SyntaxRichTextBox
 //{
-//	public class _SyntaxRichTextBox : UserControl
+//	public partial class __SyntaxRichTextBox : UserControl
 //	{
+//		public __SyntaxRichTextBox()
+//		{
+//			InitializeComponent();
+//			this.Settings = new SyntaxSettings();
+//			_dispatcher = new DebounceDispatcher();
+//		}
+
 //		private bool _suspend = true;
 //		private string _keywords = "";
 //		private List<UndoRedoItem> _undoStack = new List<UndoRedoItem>();
 //		private List<UndoRedoItem> _redoStack = new List<UndoRedoItem>();
 //		private DebounceDispatcher _dispatcher;
-//		private RichTextBox txtQuery;
-//		private Panel panel1;
 //		private frmFindReplace _findForm;
 
-//		public int SelectionStart { get => txtQuery.SelectionStart; set => txtQuery.SelectionStart = value; }
-//		public int SelectionLength { get => txtQuery.SelectionLength; set => txtQuery.SelectionLength = value; }
-//		public string SelectedText { get => txtQuery.SelectedText; set => txtQuery.SelectedText = value; }
-//		public bool ReadOnly { get => txtQuery.ReadOnly; set => txtQuery.ReadOnly = value; }
+//		public int SelectionStart { get => TextBox.SelectionStart; set => TextBox.SelectionStart = value; }
+//		public int SelectionLength { get => TextBox.SelectionLength; set => TextBox.SelectionLength = value; }
+//		public string SelectedText { get => TextBox.SelectedText; set => TextBox.SelectedText = value; }
+//		public bool ReadOnly { get => TextBox.ReadOnly; set => TextBox.ReadOnly = value; }
 
 //		/// <summary>
 //		/// The settings.
@@ -54,22 +58,18 @@
 //		int _SuspendIndex = 0;
 //		int _SuspendLength = 0;
 
-//		public _SyntaxRichTextBox() : base()
-//		{
-//			this.Settings = new SyntaxSettings();
-//			_dispatcher = new DebounceDispatcher();
-//		}
+//		public override string Text { get => TextBox.Text; set => TextBox.Text = value; }
 
 //		public void SuspendPainting()
 //		{
 //			_suspend = true;
 //			if (_Painting)
 //			{
-//				_SuspendIndex = txtQuery.SelectionStart;
-//				_SuspendLength = txtQuery.SelectionLength;
-//				SendMessage(this.txtQuery.Handle, EM_GETSCROLLPOS, 0, ref _ScrollPoint);
-//				SendMessage(this.txtQuery.Handle, WM_SETREDRAW, 0, IntPtr.Zero);
-//				_EventMask = SendMessage(this.txtQuery.Handle, EM_GETEVENTMASK, 0, IntPtr.Zero);
+//				_SuspendIndex = TextBox.SelectionStart;
+//				_SuspendLength = TextBox.SelectionLength;
+//				SendMessage(this.TextBox.Handle, EM_GETSCROLLPOS, 0, ref _ScrollPoint);
+//				SendMessage(this.TextBox.Handle, WM_SETREDRAW, 0, IntPtr.Zero);
+//				_EventMask = SendMessage(this.TextBox.Handle, EM_GETEVENTMASK, 0, IntPtr.Zero);
 //				_Painting = false;
 //			}
 //		}
@@ -78,18 +78,18 @@
 //		{
 //			if (!_Painting)
 //			{
-//				this.txtQuery.Select(_SuspendIndex, _SuspendLength);
-//				SendMessage(this.txtQuery.Handle, EM_SETSCROLLPOS, 0, ref _ScrollPoint);
-//				SendMessage(this.txtQuery.Handle, EM_SETEVENTMASK, 0, _EventMask);
-//				SendMessage(this.txtQuery.Handle, WM_SETREDRAW, 1, IntPtr.Zero);
+//				this.TextBox.Select(_SuspendIndex, _SuspendLength);
+//				SendMessage(this.TextBox.Handle, EM_SETSCROLLPOS, 0, ref _ScrollPoint);
+//				SendMessage(this.TextBox.Handle, EM_SETEVENTMASK, 0, _EventMask);
+//				SendMessage(this.TextBox.Handle, WM_SETREDRAW, 1, IntPtr.Zero);
 //				_Painting = true;
-//				this.Invalidate();
+//				TextBox.Invalidate();
 //			}
 //			_suspend = false;
 //		}
 
 //		private DateTime _lastChange = DateTime.MinValue;
-//		protected override void OnTextChanged(EventArgs e)
+//		private void txtQuery_TextChanged(object sender, EventArgs e)
 //		{
 //			if (_suspend) return;
 //			_dispatcher.Debounce(300, x =>
@@ -105,11 +105,12 @@
 //		public void InitLines()
 //		{
 //			this.SuspendPainting();
-//			txtQuery.SelectionStart = 0;
-//			txtQuery.SelectionLength = Text.Length;
-//			txtQuery.SelectionColor = Color.Black;
+//			TextBox.SelectionStart = 0;
+//			TextBox.SelectionLength = Text.Length;
+//			TextBox.SelectionColor = Color.Black;
 //			this.processText(Text, 0);
 //			this.ResumePainting();
+//			drawLineNumbers();
 //		}
 
 //		/// <summary>
@@ -119,8 +120,8 @@
 //		{
 //			this.SuspendPainting();
 
-//			int currentSelectionStart = txtQuery.SelectionStart;
-//			int currentSelectionLength = txtQuery.SelectionLength;
+//			int currentSelectionStart = TextBox.SelectionStart;
+//			int currentSelectionLength = TextBox.SelectionLength;
 
 //			// Find the start of the current line.
 //			int lineStart = currentSelectionStart;
@@ -137,16 +138,16 @@
 
 //			this.SuspendPainting();
 //			// Save the position and make the whole line black
-//			int nPosition = txtQuery.SelectionStart;
-//			txtQuery.SelectionStart = lineStart;
-//			txtQuery.SelectionLength = lineLength;
-//			txtQuery.SelectionColor = Color.Black;
+//			int nPosition = TextBox.SelectionStart;
+//			TextBox.SelectionStart = lineStart;
+//			TextBox.SelectionLength = lineLength;
+//			TextBox.SelectionColor = Color.Black;
 
 //			this.processText(line, lineStart);
 
-//			txtQuery.SelectionStart = nPosition;
-//			txtQuery.SelectionLength = 0;
-//			txtQuery.SelectionColor = Color.Black;
+//			TextBox.SelectionStart = nPosition;
+//			TextBox.SelectionLength = 0;
+//			TextBox.SelectionColor = Color.Black;
 
 //			this.ResumePainting();
 //		}
@@ -165,9 +166,9 @@
 //				// Process the words
 //				int nStart = start + regMatch.Index;
 //				int nLenght = regMatch.Length;
-//				txtQuery.SelectionStart = nStart;
-//				txtQuery.SelectionLength = nLenght;
-//				txtQuery.SelectionColor = color;
+//				TextBox.SelectionStart = nStart;
+//				TextBox.SelectionLength = nLenght;
+//				TextBox.SelectionColor = color;
 //			}
 //		}
 //		/// <summary>
@@ -202,28 +203,28 @@
 //		public void CommentSelected()
 //		{
 //			this.SuspendPainting();
-//			int currentSelectionStart = txtQuery.SelectionStart;
-//			int currentSelectionEnd = txtQuery.SelectionStart + txtQuery.SelectionLength;
+//			int currentSelectionStart = TextBox.SelectionStart;
+//			int currentSelectionEnd = TextBox.SelectionStart + TextBox.SelectionLength;
 
 //			if (_undoStack.Count > 20) _undoStack.RemoveAt(0);
-//			_undoStack.Add(new UndoRedoItem() { Text = Text, Position = txtQuery.SelectionStart });
+//			_undoStack.Add(new UndoRedoItem() { Text = Text, Position = TextBox.SelectionStart });
 
 //			// Find the start of the current line.
 //			int lineStart = currentSelectionStart;
 //			while ((lineStart > 0) && (Text[lineStart - 1] != '\n'))
 //				lineStart--;
-//			txtQuery.SelectionLength = 0;
+//			TextBox.SelectionLength = 0;
 //			for (int i = lineStart; i <= currentSelectionEnd; i++)
 //			{
 //				if (i == 0 || (i < Text.Length && Text[i - 1] == '\n'))
 //				{
-//					txtQuery.SelectionStart = i;
-//					txtQuery.SelectedText = this.Settings.Comment + " ";
-//					txtQuery.SelectionLength = 0;
+//					TextBox.SelectionStart = i;
+//					TextBox.SelectedText = this.Settings.Comment + " ";
+//					TextBox.SelectionLength = 0;
 //				}
 //			}
 
-//			txtQuery.SelectionStart = currentSelectionStart;
+//			TextBox.SelectionStart = currentSelectionStart;
 //			this.processText(Text, 0);
 //			this.ResumePainting();
 //		}
@@ -231,49 +232,50 @@
 //		public void UnCommentSelected()
 //		{
 //			this.SuspendPainting();
-//			int currentSelectionStart = txtQuery.SelectionStart;
-//			int currentSelectionEnd = txtQuery.SelectionStart + txtQuery.SelectionLength;
+//			int currentSelectionStart = TextBox.SelectionStart;
+//			int currentSelectionEnd = TextBox.SelectionStart + TextBox.SelectionLength;
 
 //			if (_undoStack.Count > 20) _undoStack.RemoveAt(0);
-//			_undoStack.Add(new UndoRedoItem() { Text = Text, Position = txtQuery.SelectionStart });
+//			_undoStack.Add(new UndoRedoItem() { Text = Text, Position = TextBox.SelectionStart });
 
 //			// Find the start of the current line.
 //			int lineStart = currentSelectionStart;
 //			while ((lineStart > 0) && (Text[lineStart - 1] != '\n'))
 //				lineStart--;
-//			txtQuery.SelectionLength = 0;
+//			TextBox.SelectionLength = 0;
 //			for (int i = lineStart; i <= currentSelectionEnd; i++)
 //			{
 //				if (i == 0 || (i < Text.Length && Text[i - 1] == '\n'))
 //				{
-//					txtQuery.SelectionStart = i;
-//					txtQuery.SelectionLength = this.Settings.Comment.Length;
-//					if (txtQuery.SelectedText == this.Settings.Comment)
+//					TextBox.SelectionStart = i;
+//					TextBox.SelectionLength = this.Settings.Comment.Length;
+//					if (TextBox.SelectedText == this.Settings.Comment)
 //					{
-//						txtQuery.SelectedText = string.Empty;
+//						TextBox.SelectedText = string.Empty;
 //					}
-//					txtQuery.SelectionStart = i;
-//					txtQuery.SelectionLength = 1;
-//					if (txtQuery.SelectedText == " ")
+//					TextBox.SelectionStart = i;
+//					TextBox.SelectionLength = 1;
+//					if (TextBox.SelectedText == " ")
 //					{
-//						txtQuery.SelectedText = string.Empty;
+//						TextBox.SelectedText = string.Empty;
 //					}
 //				}
 //			}
 
 //			this.processText(Text, 0);
-//			txtQuery.SelectionStart = currentSelectionStart;
+//			TextBox.SelectionStart = currentSelectionStart;
 //			this.ResumePainting();
 //		}
 
-//		protected override void OnKeyUp(KeyEventArgs e)
+//		private void txtQuery_KeyUp(object sender, KeyEventArgs e)
 //		{
-//			base.OnKeyUp(e);
 //			if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V)
 //			{
+//				_bounceScroll = true;
 //				this.SuspendPainting();
 //				this.processText(Text, 0);
 //				this.ResumePainting();
+//				_bounceScroll = false;
 //			}
 //			else if (e.KeyCode == Keys.Space)
 //			{
@@ -282,21 +284,22 @@
 //			if (e.KeyCode == Keys.Enter)
 //			{
 //				this.ProcessLine();
-//				if (txtQuery.SelectionStart > 0 && txtQuery.SelectionLength == 0)
+//				this.drawLineNumbers();
+//				if (TextBox.SelectionStart > 0 && TextBox.SelectionLength == 0)
 //				{
-//					int lineStart = txtQuery.SelectionStart - 1;
+//					int lineStart = TextBox.SelectionStart - 1;
 //					while ((lineStart > 0) && (Text[lineStart - 1] != '\n'))
 //					{
 //						lineStart--;
 //					}
-//					var indentMatch = Regex.Match(Text.Substring(lineStart, (txtQuery.SelectionStart - lineStart)),
+//					var indentMatch = Regex.Match(Text.Substring(lineStart, (TextBox.SelectionStart - lineStart)),
 //						"^([ \t]+)");
 //					if (indentMatch.Success)
 //					{
 //						this.SuspendPainting();
-//						this.txtQuery.SelectedText = indentMatch.Groups[1].Value;
+//						this.TextBox.SelectedText = indentMatch.Groups[1].Value;
 //						this.ResumePainting();
-//						txtQuery.SelectionStart += indentMatch.Groups[1].Value.Length;
+//						TextBox.SelectionStart += indentMatch.Groups[1].Value.Length;
 //					}
 //				}
 
@@ -304,7 +307,7 @@
 //		}
 
 //		private DateTime _lastStack = DateTime.MinValue;
-//		protected override void OnKeyDown(KeyEventArgs e)
+//		private void txtQuery_KeyDown(object sender, KeyEventArgs e)
 //		{
 //			List<UndoRedoItem> addStack = null;
 //			List<UndoRedoItem> removeStack = null;
@@ -329,7 +332,7 @@
 //					_findForm = new frmFindReplace();
 //					_findForm.TextBox = this;
 //					_findForm.chkReplace.Checked = e.KeyCode == Keys.H;
-//					_findForm.FormClosed += (object sender, FormClosedEventArgs args) => _findForm = null;
+//					_findForm.FormClosed += (object sender2, FormClosedEventArgs args) => _findForm = null;
 //					_findForm.Show();
 //				}
 //			}
@@ -344,7 +347,7 @@
 //				if ((!_undoStack.Any() || Text != _undoStack.Last().Text))
 //				{
 //					if (_undoStack.Count > 20) _undoStack.RemoveAt(0);
-//					_undoStack.Add(new UndoRedoItem() { Text = Text, Position = txtQuery.SelectionStart });
+//					_undoStack.Add(new UndoRedoItem() { Text = Text, Position = TextBox.SelectionStart });
 //				}
 //			}
 
@@ -352,17 +355,17 @@
 //			{
 //				if (removeStack.Any())
 //				{
-//					addStack.Add(new UndoRedoItem() { Text = Text, Position = txtQuery.SelectionStart });
+//					addStack.Add(new UndoRedoItem() { Text = Text, Position = TextBox.SelectionStart });
 //					var item = removeStack.Last();
 //					removeStack.RemoveAt(removeStack.Count - 1);
 //					SuspendPainting();
 //					Text = item.Text;
-//					txtQuery.SelectionStart = 0;
-//					txtQuery.SelectionLength = Text.Length;
-//					txtQuery.SelectionColor = Color.Black;
+//					TextBox.SelectionStart = 0;
+//					TextBox.SelectionLength = Text.Length;
+//					TextBox.SelectionColor = Color.Black;
 //					processText(Text, 0);
 //					ResumePainting();
-//					txtQuery.SelectionStart = item.Position;
+//					TextBox.SelectionStart = item.Position;
 //				}
 //				e.Handled = true;
 //				return;
@@ -374,21 +377,20 @@
 //		private void resetSelectionHighlighting()
 //		{
 //			if (!_somethingHighlighted) return;
-//			var currSelection = txtQuery.SelectionStart;
-//			var currSelectionLength = txtQuery.SelectionLength;
-//			txtQuery.SelectionStart = 0;
-//			txtQuery.SelectionLength = Text.Length;
-//			txtQuery.SelectionBackColor = Color.White;
-//			txtQuery.SelectionLength = currSelectionLength;
-//			txtQuery.SelectionStart = currSelection;
+//			var currSelection = TextBox.SelectionStart;
+//			var currSelectionLength = TextBox.SelectionLength;
+//			TextBox.SelectionStart = 0;
+//			TextBox.SelectionLength = Text.Length;
+//			TextBox.SelectionBackColor = Color.White;
+//			TextBox.SelectionLength = currSelectionLength;
+//			TextBox.SelectionStart = currSelection;
 //			_somethingHighlighted = false;
 //		}
 
 
-//		protected override void OnMouseUp(MouseEventArgs mevent)
+//		private void txtQuery_MouseUp(object sender, MouseEventArgs e)
 //		{
-//			base.OnMouseUp(mevent);
-//			if (txtQuery.SelectedText.Length > 50) return;
+//			if (TextBox.SelectedText.Length > 50) return;
 
 //			SuspendPainting();
 //			HighlightSelection();
@@ -398,63 +400,68 @@
 //		public void HighlightSelection()
 //		{
 //			resetSelectionHighlighting();
-//			if (txtQuery.SelectedText.Length > 1)
+//			if (TextBox.SelectedText.Length > 1)
 //			{
-//				var matches = Regex.Matches(Text, $"{Regex.Escape(txtQuery.SelectedText.Trim())}", RegexOptions.IgnoreCase);
+//				var matches = Regex.Matches(Text, $"{Regex.Escape(TextBox.SelectedText.Trim())}", RegexOptions.IgnoreCase);
 //				if (matches.Count > 1)
 //				{
-//					var currSelection = txtQuery.SelectionStart;
+//					var currSelection = TextBox.SelectionStart;
 //					foreach (Match m in matches)
 //					{
 //						if (m.Index != currSelection)
 //						{
-//							txtQuery.SelectionStart = m.Index;
-//							txtQuery.SelectionBackColor = Settings.SelectionBackColor;
+//							TextBox.SelectionStart = m.Index;
+//							TextBox.SelectionBackColor = Settings.SelectionBackColor;
 //						}
 //					}
 //					_somethingHighlighted = true;
-//					txtQuery.SelectionStart = currSelection;
+//					TextBox.SelectionStart = currSelection;
 //				}
 //			}
 //		}
 
-//		private void InitializeComponent()
-//		{
-//			this.txtQuery = new System.Windows.Forms.RichTextBox();
-//			this.panel1 = new System.Windows.Forms.Panel();
-//			this.SuspendLayout();
-//			// 
-//			// txtQuery
-//			// 
-//			this.txtQuery.AcceptsTab = true;
-//			this.txtQuery.Dock = System.Windows.Forms.DockStyle.Fill;
-//			this.txtQuery.Location = new System.Drawing.Point(40, 0);
-//			this.txtQuery.Name = "txtQuery";
-//			this.txtQuery.Size = new System.Drawing.Size(576, 495);
-//			this.txtQuery.TabIndex = 0;
-//			this.txtQuery.Text = "";
-//			// 
-//			// panel1
-//			// 
-//			this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
-//			this.panel1.Location = new System.Drawing.Point(0, 0);
-//			this.panel1.Name = "panel1";
-//			this.panel1.Size = new System.Drawing.Size(40, 495);
-//			this.panel1.TabIndex = 1;
-//			// 
-//			// SyntaxRichTextBox
-//			// 
-//			this.Controls.Add(this.txtQuery);
-//			this.Controls.Add(this.panel1);
-//			this.Name = "SyntaxRichTextBox";
-//			this.Size = new System.Drawing.Size(616, 495);
-//			this.ResumeLayout(false);
-
-//		}
-
 //		public void AppendText(string text)
 //		{
-//			txtQuery.AppendText(text);
+//			TextBox.AppendText(text);
+//		}
+
+//		private void drawLineNumbers()
+//		{
+//			txtLines.SuspendLayout();
+//			int firstIndex = TextBox.GetCharIndexFromPosition(new Point(0, 0));
+//			int firstLine = TextBox.GetLineFromCharIndex(firstIndex);
+//			int lastIndex = TextBox.GetCharIndexFromPosition(new Point(TextBox.ClientRectangle.Width, TextBox.ClientRectangle.Height));
+//			int lastLine = TextBox.GetLineFromCharIndex(lastIndex);
+//			txtLines.Text = string.Empty;
+//			for (int i = firstLine; i <= lastLine; i++)
+//			{
+//				txtLines.Text += (i + 1) + " \r\n";
+//			}
+//			txtLines.ResumeLayout();
+//		}
+
+//		private bool _bounceScroll = false;
+//		private void TxtQuery_VScroll(object sender, EventArgs e)
+//		{
+//			if (_bounceScroll)
+//			{
+//				_dispatcher.Debounce(300, x =>
+//				{
+//					this.Invoke(new Action(() =>
+//					{
+//						drawLineNumbers();
+//					}));
+//				});
+//			}
+//			else
+//			{
+//				drawLineNumbers();
+//			}
+//		}
+
+//		private void TxtQuery_SizeChanged(object sender, EventArgs e)
+//		{
+//			drawLineNumbers();
 //		}
 //	}
 

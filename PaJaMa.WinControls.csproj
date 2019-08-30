@@ -246,13 +246,19 @@
     <Compile Include="SyntaxRichTextBox\frmFindReplace.Designer.cs">
       <DependentUpon>frmFindReplace.cs</DependentUpon>
     </Compile>
-    <Compile Include="SyntaxRichTextBox\SyntaxRichTextBox.cs">
+    <Compile Include="SyntaxRichTextBox\LinedSyntaxRichTextBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SyntaxRichTextBox\SyntaxRichTextBox.Designer.cs">
-      <DependentUpon>SyntaxRichTextBox.cs</DependentUpon>
+    <Compile Include="SyntaxRichTextBox\LinedSyntaxRichTextBox.Designer.cs">
+      <DependentUpon>LinedSyntaxRichTextBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="SyntaxRichTextBox\_SyntaxRichTextBox.cs" />
+    <Compile Include="SyntaxRichTextBox\__SyntaxRichTextBox.cs" />
+    <Compile Include="SyntaxRichTextBox\__SyntaxRichTextBox.Designer.cs">
+      <DependentUpon>__SyntaxRichTextBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SyntaxRichTextBox\SyntaxRichTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="TabControl\Tab.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -342,8 +348,11 @@
     <EmbeddedResource Include="SyntaxRichTextBox\frmFindReplace.resx">
       <DependentUpon>frmFindReplace.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SyntaxRichTextBox\SyntaxRichTextBox.resx">
-      <DependentUpon>SyntaxRichTextBox.cs</DependentUpon>
+    <EmbeddedResource Include="SyntaxRichTextBox\LinedSyntaxRichTextBox.resx">
+      <DependentUpon>LinedSyntaxRichTextBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SyntaxRichTextBox\__SyntaxRichTextBox.resx">
+      <DependentUpon>__SyntaxRichTextBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TabControl\Tab.resx">
       <DependentUpon>Tab.cs</DependentUpon>
