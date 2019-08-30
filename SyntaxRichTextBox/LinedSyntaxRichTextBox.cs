@@ -58,7 +58,7 @@ namespace PaJaMa.WinControls.SyntaxRichTextBox
 
 		private void TextBox_KeyUp(object sender, KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Enter)
+			if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Back || e.KeyCode == Keys.Delete)
 			{
 				DrawLineNumbers();
 			}
