@@ -36,7 +36,7 @@ namespace PaJaMa.WinControls.Explorer
 				string key = (path.Parent == null ? path.FullName : "folder");
 				if (!_icons.ContainsKey(key))
 				{
-					Icon ico = PaJaMa.Common.Imaging.GetIconForFile(path.FullName, true);
+					Icon ico = Imaging.GetIconForFile(path.FullName, true);
 					_icons.Add(key, _icons.Count);
 					imageList1.Images.Add(ico);
 				}
@@ -81,7 +81,7 @@ namespace PaJaMa.WinControls.Explorer
 					string key = (dinfc.Parent == null ? dinfc.FullName : "folder");
 					if (!_icons.ContainsKey(key))
 					{
-						Icon ico = PaJaMa.Common.Imaging.GetIconForFile(dinfc.FullName, true);
+						Icon ico = Imaging.GetIconForFile(dinfc.FullName, true);
 						_icons.Add(key, _icons.Count);
 						imageList1.Images.Add(ico);
 					}
@@ -94,7 +94,7 @@ namespace PaJaMa.WinControls.Explorer
 				{
 					if (!_icons.ContainsKey(finf.Extension))
 					{
-						Icon ico = PaJaMa.Common.Imaging.GetIconForFile(finf.FullName, true);
+						Icon ico = Imaging.GetIconForFile(finf.FullName, true);
 						_icons.Add(finf.Extension, _icons.Count);
 						imageList1.Images.Add(ico);
 					}
