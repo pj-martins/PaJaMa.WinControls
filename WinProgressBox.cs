@@ -73,13 +73,13 @@ namespace PaJaMa.WinControls
 		}
 
 		private Form _progressForm = null;
-		public static void ShowProgress(BackgroundWorker worker, string text = "", IWin32Window owner = null,
+		public static DialogResult ShowProgress(BackgroundWorker worker, string text = "", IWin32Window owner = null,
 			bool allowCancel = false, ProgressBarStyle progressBarStyle = ProgressBarStyle.Blocks)
 		{
-			new WinProgressBox().Show(worker, text, owner, allowCancel, progressBarStyle);
+			return new WinProgressBox().Show(worker, text, owner, allowCancel, progressBarStyle);
 		}
 
-		public void Show(BackgroundWorker worker, string text = "", IWin32Window owner = null,
+		public DialogResult Show(BackgroundWorker worker, string text = "", IWin32Window owner = null,
 			bool allowCancel = false, ProgressBarStyle progressBarStyle = ProgressBarStyle.Blocks)
 		{
 			_progressForm = new Form();
@@ -103,11 +103,11 @@ namespace PaJaMa.WinControls
 			this.BackgroundWorker.RunWorkerAsync();
 			if (owner != null)
 			{
-				_progressForm.ShowDialog(owner);
+				return _progressForm.ShowDialog(owner);
 			}
 			else
 			{
-				_progressForm.ShowDialog();
+				return _progressForm.ShowDialog();
 			}
 
 		}

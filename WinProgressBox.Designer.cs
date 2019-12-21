@@ -38,7 +38,7 @@
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnCancel.AutoSize = true;
 			this.btnCancel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.btnCancel.Location = new System.Drawing.Point(213, 34);
+			this.btnCancel.Location = new System.Drawing.Point(276, 89);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(50, 23);
 			this.btnCancel.TabIndex = 3;
@@ -52,7 +52,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.progMain.Location = new System.Drawing.Point(3, 3);
 			this.progMain.Name = "progMain";
-			this.progMain.Size = new System.Drawing.Size(260, 25);
+			this.progMain.Size = new System.Drawing.Size(323, 25);
 			this.progMain.TabIndex = 2;
 			// 
 			// lblProgress
@@ -76,7 +76,7 @@
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.progMain);
 			this.Name = "WinProgressBox";
-			this.Size = new System.Drawing.Size(266, 60);
+			this.Size = new System.Drawing.Size(329, 115);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

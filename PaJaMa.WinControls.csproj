@@ -147,6 +147,7 @@
     <Compile Include="Explorer\Explorer.Designer.cs">
       <DependentUpon>Explorer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Extensions.cs" />
     <Compile Include="FileBrowser\FileBrowser.cs">
       <SubType>UserControl</SubType>
     </Compile>
