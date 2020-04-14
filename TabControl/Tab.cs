@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace PaJaMa.WinControls.TabControl
 {
-	internal partial class Tab : UserControl
+	public partial class Tab : UserControl
 	{
 		public bool IsSelected { get; set; }
 		public event EventHandler TabSelected;
