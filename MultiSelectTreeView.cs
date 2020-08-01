@@ -71,7 +71,7 @@ namespace PaJaMa.WinControls
 			var node = this.GetNodeAt(new System.Drawing.Point(e.X, e.Y));
 			if (node != null)
 			{
-				BeginUpdate();
+				// BeginUpdate();
 				if (ModifierKeys.HasFlag(Keys.Shift))
 				{
 					if (SelectedNode != null)
@@ -97,7 +97,7 @@ namespace PaJaMa.WinControls
 				}
 				SelectedNode = node;
 				this.Invalidate();
-				EndUpdate();
+				// EndUpdate();
 				if (this.AllowDragNodes && e.Button == MouseButtons.Left && e.Clicks == 2)
 					_isDragging = false;
 			}
@@ -127,10 +127,10 @@ namespace PaJaMa.WinControls
 			{
 				if (e.Button == MouseButtons.Left && !ModifierKeys.HasFlag(Keys.Control) && !ModifierKeys.HasFlag(Keys.Shift))
 				{
-					BeginUpdate();
+					// BeginUpdate();
 					this.SelectedNodes.Clear();
 					this.SelectedNodes.Add(this.SelectedNode);
-					EndUpdate();
+					// EndUpdate();
 				}
 				if (_isDragging)
 					_isDragging = false;
