@@ -14,7 +14,7 @@ namespace PaJaMa.WinControls.TabControl
 	public partial class TabPage : Panel
 	{
 		public bool IsSelected { get; set; }
-		internal Tab Tab { get; set; }
+		public Tab Tab { get; internal set; }
 
 		internal event EventHandler TabTextChanged;
 
