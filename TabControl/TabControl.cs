@@ -157,7 +157,9 @@ namespace PaJaMa.WinControls.TabControl
 		private void btnAdd_Click(object sender, EventArgs e)
 		{
 			var tabPage = new TabPage() { Text = "New Tab" };
-			TabAdding?.Invoke(this, new TabEventArgs(tabPage));
+			var args = new TabEventArgs(tabPage);
+			TabAdding?.Invoke(this, args);
+			if (args.Cancel) return;
 			this.TabPages.Add(tabPage);
 			SelectedTab = tabPage;
 			TabChanged?.Invoke(this, new TabEventArgs(tabPage));
@@ -250,6 +252,7 @@ namespace PaJaMa.WinControls.TabControl
 	public class TabEventArgs : EventArgs
 	{
 		public TabPage TabPage { get; private set; }
+		public bool Cancel { get; set; }
 
 		public TabEventArgs(TabPage tabPage)
 		{

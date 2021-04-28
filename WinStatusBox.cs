@@ -53,7 +53,17 @@ namespace PaJaMa.WinControls
 		public WinStatusBox()
 		{
 			InitializeComponent();
-			txtLines.GotFocus += (object sender, EventArgs e) => HideCaret(txtLines.Handle);
+			txtLines.GotFocus += (object sender, EventArgs e) =>
+			{
+				try
+				{
+					HideCaret(txtLines.Handle);
+				}
+				catch
+				{
+					// MONO???
+				}
+			};
 		}
 
 		private void WinStatusBox_FormClosing(object sender, FormClosingEventArgs e)
