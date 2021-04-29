@@ -40,6 +40,8 @@ namespace PaJaMa.WinControls.TabControl
 			}
 		}
 
+		internal int WrapPanelIndex { get; set; }
+
 		public Tab()
 		{
 			InitializeComponent();
