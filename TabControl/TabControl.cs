@@ -14,7 +14,9 @@ namespace PaJaMa.WinControls.TabControl
     public partial class TabControl : UserControl
     {
         public event TabEventHandler TabClosing;
+        public event TabEventHandler TabClosed;
         public event TabEventHandler TabAdding;
+        public event TabEventHandler TabAdded;
         public event TabEventHandler TabChanged;
         public event TabEventHandler TabOrderChanged;
 
@@ -172,6 +174,7 @@ namespace PaJaMa.WinControls.TabControl
                 SelectedTab = TabPages[index];
             else if (index > 0)
                 SelectedTab = TabPages[index - 1];
+            TabClosed?.Invoke(this, new TabEventArgs(tab.TabPage));
         }
 
         private void NewTab_TabSelected(object sender, EventArgs e)
@@ -206,6 +209,7 @@ namespace PaJaMa.WinControls.TabControl
             if (args.Cancel) return;
             this.TabPages.Add(tabPage);
             SelectedTab = tabPage;
+            TabAdded?.Invoke(this, new TabEventArgs(tabPage));
             TabChanged?.Invoke(this, new TabEventArgs(tabPage));
         }
 
@@ -288,6 +292,7 @@ namespace PaJaMa.WinControls.TabControl
                 TabClosing?.Invoke(this, new TabEventArgs(tabPage));
                 TabPages.Remove(tabPage);
                 pnlTabs.Controls.Remove(tabPage.Tab);
+                TabClosed?.Invoke(this, new TabEventArgs(tab.TabPage));
             }
         }
     }
