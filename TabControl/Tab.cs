@@ -36,6 +36,10 @@ namespace PaJaMa.WinControls.TabControl
 			{
 				_tabPage = value;
 				_tabPage.TabTextChanged += delegate (object sender, EventArgs e) { redraw(); };
+				if (_tabPage.ContextMenuStrip != null)
+                {
+					this.ContextMenuStrip.Items.AddRange(_tabPage.ContextMenuStrip.Items.OfType<ToolStripItem>().ToArray());
+                }
 				redraw();
 			}
 		}
