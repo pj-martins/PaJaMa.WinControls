@@ -62,6 +62,21 @@ namespace PaJaMa.WinControls.TabControl
             }
         }
 
+        private int _maxTextLength;
+        [DefaultValue(0)]
+        public int MaxTextLength
+        {
+            get { return _maxTextLength; }
+            set
+            {
+                _maxTextLength = value;
+                foreach (var tab in TabPages.Select(tp => tp.Tab))
+                {
+                    tab.MaxTextLength = value;
+                }
+            }
+        }
+
         [DefaultValue(false)]
         public bool WrapTabs { get; set; }
 
@@ -81,7 +96,7 @@ namespace PaJaMa.WinControls.TabControl
             if (e.ListChangedType == ListChangedType.ItemAdded)
             {
                 _selectedTab = TabPages[e.NewIndex];
-                var newTab = new Tab() { TabPage = _selectedTab, AllowRemove = this.AllowRemove, TabControl = this };
+                var newTab = new Tab() { TabPage = _selectedTab, AllowRemove = this.AllowRemove, TabControl = this, MaxTextLength = this.MaxTextLength };
                 _selectedTab.Tab = newTab;
                 newTab.TabSelected += NewTab_TabSelected;
                 newTab.TabRemoving += NewTab_TabRemoving;
