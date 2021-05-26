@@ -57,8 +57,9 @@ namespace PaJaMa.WinControls.TabControl
 		{
 			this.SuspendLayout();
 			btnRemove.Visible = AllowRemove;
-			this.lblTabText.Text = _tabPage.Text;
+			this.lblTabText.Text = $"{_tabPage.Text.Substring(0, Math.Min(_tabPage.Text.Length, 20))}{(_tabPage.Text.Length > 20 ? "..." : "")}";
 			this.Width = this.lblTabText.Width + (AllowRemove ? btnRemove.Width : 0) + 3;
+			toolTip1.SetToolTip(lblTabText, _tabPage.Text);
 			this.ResumeLayout();
 		}
 
