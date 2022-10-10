@@ -15,6 +15,7 @@ namespace PaJaMa.WinControls.TabControl
 	{
 		public bool IsSelected { get; set; }
 		public Tab Tab { get; internal set; }
+		public string TooltipText { get; set; }
 
 		internal event EventHandler TabTextChanged;
 
@@ -29,7 +30,7 @@ namespace PaJaMa.WinControls.TabControl
 			}
 		}
 
-		public TabPage(string text) : this()
+        public TabPage(string text) : this()
 		{
 			this.Text = text;
 		}

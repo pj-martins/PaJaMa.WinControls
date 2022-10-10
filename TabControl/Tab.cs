@@ -70,7 +70,7 @@ namespace PaJaMa.WinControls.TabControl
 			btnRemove.Visible = AllowRemove;
 			this.lblTabText.Text = $"{_tabPage.Text.Substring(0, Math.Min(_tabPage.Text.Length, _maxTextLength == 0 ? _tabPage.Text.Length : _maxTextLength))}{(_maxTextLength != 0 && _tabPage.Text.Length > _maxTextLength ? "..." : "")}";
 			this.Width = this.lblTabText.Width + (AllowRemove ? btnRemove.Width : 0) + 3;
-			toolTip1.SetToolTip(lblTabText, _tabPage.Text);
+			toolTip1.SetToolTip(lblTabText, string.IsNullOrEmpty(_tabPage.TooltipText) ? _tabPage.Text : _tabPage.TooltipText);
 			this.ResumeLayout();
 		}
 
